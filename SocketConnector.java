@@ -23,8 +23,7 @@ public final class SocketConnector implements Runnable {
 		this.socketNumber = 0;
 	}
 
-	public static SocketConnector createConnector(PongServer ps, int portNumber, int n)
-	throws IOException {
+	public static SocketConnector createConnector(PongServer ps, int portNumber, int n) throws IOException {
 		SocketConnector sc = new SocketConnector(ps, n);
 		sc.initialize(portNumber);
 		return sc;
@@ -74,8 +73,10 @@ public final class SocketConnector implements Runnable {
 	public synchronized void transNumberOfSocket(int n) {
 		if (n == -1) {
 			this.socketNumber--;
-			if (this.socketNumber <= 0) this.setReceivedNow(false);
-		} else if (n == 1) this.socketNumber++;
+			if (this.socketNumber <= 0)
+				this.setReceivedNow(false);
+		} else if (n == 1)
+			this.socketNumber++;
 	}
 
 	public synchronized void terminate() {

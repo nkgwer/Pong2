@@ -1,4 +1,3 @@
-import java.util.StringTokenizer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,7 +10,7 @@ public class PongClient implements Runnable {
 	private boolean isInitialized;
 	private Socket socket;
 	private PongReceiverC pongReceiver;
-	private PongSenderC pongSender;
+	PongSenderC pongSender;
 	int Number;
 	boolean isStartFrame, isGameFrame;
 
@@ -43,7 +42,7 @@ public class PongClient implements Runnable {
 
 		while (this.isGameFrame) {
 			// ボールが自分のフィールドに来るまで待つ。
-			while (!this.gFrameC.isBallHere) {
+			while (this.gFrameC.ball[0] != null) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException ire) {
@@ -52,7 +51,7 @@ public class PongClient implements Runnable {
 			}
 
 			// ボールが自分のフィールドから出ない間待つ。
-			while (this.gFrameC.isBallHere) {
+			while (this.gFrameC.ball[0] == null) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException ire) {
@@ -61,7 +60,9 @@ public class PongClient implements Runnable {
 			}
 
 			// サーバーに、上に行ったボールの位置と速度を送信する。
-			this.pongSender.send(this.gFrameC.ball.x + " " + this.gFrameC.ball.getVX() + " " + this.gFrameC.ball.getVY());
+			// this.pongSender.send(
+			// this.gFrameC.ball[0].x + " " + this.gFrameC.ball[0].getVX() + " "
+			// + this.gFrameC.ball[0].getVY());
 		}
 
 		this.pongSender.send("END");
@@ -79,67 +80,7 @@ public class PongClient implements Runnable {
 		// System.exit(0);
 	}
 
-
-	public static void main(String[] args) throws Exception {
-		PongClient pc = new PongClient();
-		pc.initialize();
-		pc.waitBtnPushed();
-
-		pc.userName = pc.sFrameC.textField1.getText(); // ユーザーネーム
-		pc.hostName = pc.sFrameC.textField2.getText(); // 10.9.81.128 など
-
-		pc.accessServer(args); // サーバーに接続, 受信の設定
-
-		pc.pongSender.send("Joined: " + pc.userName); // データ送信
-
-		// ゲームフレームに切り替わるまで待つ。
-		while (pc.isStartFrame || !pc.isGameFrame) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException ire) {
-				// Do Nothing.
-			}
-		}
-
-		while (pc.isGameFrame) {
-			// ボールが自分のフィールドに来るまで待つ。
-			while (!pc.gFrameC.isBallHere) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException ire) {
-					// Do Nothing.
-				}
-			}
-
-			// ボールが自分のフィールドから出ない間待つ。
-			while (pc.gFrameC.isBallHere) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException ire) {
-					// Do Nothing.
-				}
-			}
-
-			// サーバーに、上に行ったボールの位置と速度を送信する。
-			pc.pongSender.send(pc.gFrameC.ball.x + " " + pc.gFrameC.ball.getVX() + " " + pc.gFrameC.ball.getVY());
-		}
-
-		pc.pongSender.send("END");
-
-		try {
-			if (pc.socket != null) {
-				System.out.println("closing...");
-				pc.socket.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Closed: " + pc.socket.getRemoteSocketAddress());
-		// pc.sf.setVisible(false);
-		// System.exit(0);
-	}
-
-	public void initialize () {
+	public void initialize() {
 		if (this.isInitialized) {
 			return;
 		}
@@ -239,22 +180,13 @@ public class PongClient implements Runnable {
 				this.changeFrameStoG();
 			}
 		} else if (this.isGameFrame) {
-			if (s.startsWith("Place:")) {
-				int[] place = new int[3];
-				StringTokenizer st = new StringTokenizer(s, " ");
-				st.nextToken();
-				for (int i = 0; i < 3; i++) {
-					place[i] = Integer.parseInt(st.nextToken());
-				}
-				this.gFrameC.ball.setLocation(this.gFrameC.FRAME_SIZE.width - this.gFrameC.ball.width - place[0], 1);
-				this.gFrameC.ball.setVX(- place[1]);
-				this.gFrameC.ball.setVY((int) Math.abs(place[2]));
-				this.gFrameC.isBallHere = true;
+			if (s.startsWith("Ball:")) {
+				this.gFrameC.receiveBall(s);
 			}
 		}
 	}
 
-	public synchronized void terminateConnection () {
+	public synchronized void terminateConnection() {
 		this.closeSocketStream();
 	}
 
@@ -284,8 +216,8 @@ public class PongClient implements Runnable {
 		}
 	}
 
-	private void changeFrameStoG () {
-		this.gFrameC = new GameFrameC();
+	private void changeFrameStoG() {
+		this.gFrameC = new GameFrameC(this);
 		System.out.println("Closing: Start Frame");
 		this.isGameFrame = true;
 		this.isStartFrame = false;

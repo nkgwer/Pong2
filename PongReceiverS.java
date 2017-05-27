@@ -1,8 +1,7 @@
-import java.util.StringTokenizer;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.net.Socket;
 
 /* 受信用クラス */
@@ -13,7 +12,7 @@ final class PongReceiverS implements Runnable {
 	private boolean isReading;
 	private int i;
 
-	private PongReceiverS (PongServer nps, Socket nsocket, BufferedReader nbfr, int ni) {
+	private PongReceiverS(PongServer nps, Socket nsocket, BufferedReader nbfr, int ni) {
 		this.ps = nps;
 		this.socket = nsocket;
 		this.bfr = nbfr;
@@ -21,11 +20,9 @@ final class PongReceiverS implements Runnable {
 		this.isReading = true;
 	}
 
-	public static PongReceiverS createReceiver(PongServer s, Socket socket, int i)
-	throws IOException {
+	public static PongReceiverS createReceiver(PongServer s, Socket socket, int i) throws IOException {
 		InputStream inputStream = socket.getInputStream();
-		BufferedReader in = new BufferedReader(
-		    new InputStreamReader(inputStream)); // データ受信用バッファの設定
+		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream)); // データ受信用バッファの設定
 		PongReceiverS pongReceiver = new PongReceiverS(s, socket, in, i);
 		System.out.println("Complete setting : Receiver[" + i + "] = " + pongReceiver);
 		System.out.println("Complete setting : Receiving Buffer[" + i + "] = " + in);
