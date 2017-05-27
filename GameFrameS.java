@@ -9,6 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import java.util.Random;
+
 // PongServer向けゲーム画面用クラス
 public class GameFrameS extends GameFrame implements ActionListener {
 	PongServer pongServer;
@@ -54,8 +56,13 @@ public class GameFrameS extends GameFrame implements ActionListener {
 	public void init() {
 		count = 0;
 		j = 1;
+		Random rnd = new Random();
+		
 		for (int i = 0; i < this.pongServer.number - 1; i++) {
-			pongServer.sendBall(i, new Ball("Ball: 185 1 30 30 1 1 100 100 200"));
+			int r = rnd.nextInt(155)+50;
+			int g = rnd.nextInt(155)+50;
+			int b = rnd.nextInt(155)+50;
+			pongServer.sendBall(i, new Ball("Ball: 185 1 30 30 1 1"+" "+r+" "+g+" "+b));
 		}
 		new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

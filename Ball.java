@@ -12,9 +12,9 @@ public class Ball extends Rectangle {
 		super(nx, ny, nwidth, nheight);
 		this.v = new Dimension(0, 0);
 		Random rnd = new Random();
-		this.r = rnd.nextInt(155)+100;
-		this.g = rnd.nextInt(155)+100;
-		this.b = rnd.nextInt(155)+100;
+		this.r = rnd.nextInt(155)+50;
+		this.g = rnd.nextInt(155)+50;
+		this.b = rnd.nextInt(155)+50;
 	}
 
 	public Ball(String s) {
