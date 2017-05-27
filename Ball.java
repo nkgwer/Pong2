@@ -7,7 +7,6 @@ import java.util.Random;
 public class Ball extends Rectangle {
 	private Dimension v;
 	private boolean isVisible;
-	private Color c;
 	private int r,g,b;
 	public Ball(int nx, int ny, int nwidth, int nheight) {
 		super(nx, ny, nwidth, nheight);
@@ -16,7 +15,6 @@ public class Ball extends Rectangle {
 		this.r = rnd.nextInt(155)+100;
 		this.g = rnd.nextInt(155)+100;
 		this.b = rnd.nextInt(155)+100;
-		this.c = new Color(this.r,this.g,this.b);
 	}
 
 	public Ball(String s) {
@@ -33,7 +31,6 @@ public class Ball extends Rectangle {
 		this.r = Integer.parseInt(st.nextToken());
 		this.g = Integer.parseInt(st.nextToken());
 		this.b = Integer.parseInt(st.nextToken());
-		this.c = new Color(r,g,b);
 	}
 
 	public void setV(Dimension nv) {
