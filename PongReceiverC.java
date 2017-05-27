@@ -1,8 +1,7 @@
-import java.util.StringTokenizer;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.net.Socket;
 
 /* PongClient向け受信用クラス */
@@ -12,18 +11,16 @@ final class PongReceiverC implements Runnable {
 	private BufferedReader bfr;
 	private boolean isReading;
 
-	private PongReceiverC (PongClient npc, Socket nsocket, BufferedReader nbfr) {
+	private PongReceiverC(PongClient npc, Socket nsocket, BufferedReader nbfr) {
 		this.pongClient = npc;
 		this.socket = nsocket;
 		this.bfr = nbfr;
 		this.isReading = true;
 	}
 
-	public static PongReceiverC createReceiver(PongClient pc, Socket socket)
-	throws IOException {
+	public static PongReceiverC createReceiver(PongClient pc, Socket socket) throws IOException {
 		InputStream inputStream = socket.getInputStream();
-		BufferedReader in = new BufferedReader(
-		    new InputStreamReader(inputStream)); // データ受信用バッファの設定
+		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream)); // データ受信用バッファの設定
 		PongReceiverC pongReceiver = new PongReceiverC(pc, socket, in);
 		System.out.println("Complete setting : Receiver = " + pongReceiver);
 		System.out.println("Complete setting : Receiving Buffer = " + in);
