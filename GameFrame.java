@@ -53,6 +53,7 @@ public class GameFrame extends JFrame {
 
 		ball = new Ball[BALL_N];
 
+
 		// バー
 		bar = new Bar(150, 461, 100, 10);
 
@@ -138,9 +139,10 @@ public class GameFrame extends JFrame {
 		g.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
 		// g.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
-		g.setColor(Color.RED);
+		
 		for (int i = 0; i < ball.length; i++) {
 			if (ball[i] != null) {
+				g.setColor(new Color(ball[i].getR(),ball[i].getG(),ball[i].getB()));
 				g.fillOval(ball[i].x, ball[i].y, ball[i].width, ball[i].height);
 			}
 		}

@@ -55,7 +55,7 @@ public class GameFrameS extends GameFrame implements ActionListener {
 		count = 0;
 		j = 1;
 		for (int i = 0; i < this.pongServer.number - 1; i++) {
-			pongServer.sendBall(i, new Ball("Ball: 185 1 30 30 1 1"));
+			pongServer.sendBall(i, new Ball("Ball: 185 1 30 30 1 1 100 100 200"));
 		}
 		new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
