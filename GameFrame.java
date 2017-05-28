@@ -53,7 +53,6 @@ public class GameFrame extends JFrame {
 
 		ball = new Ball[BALL_N];
 
-
 		// バー
 		bar = new Bar(150, 461, 100, 10);
 
@@ -139,10 +138,10 @@ public class GameFrame extends JFrame {
 		g.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
 		// g.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
-		
+
 		for (int i = 0; i < ball.length; i++) {
 			if (ball[i] != null) {
-				g.setColor(new Color(ball[i].getR(),ball[i].getG(),ball[i].getB()));
+				g.setColor(new Color(ball[i].getR(), ball[i].getG(), ball[i].getB()));
 				g.fillOval(ball[i].x, ball[i].y, ball[i].width, ball[i].height);
 			}
 		}
@@ -186,6 +185,10 @@ public class GameFrame extends JFrame {
 		return b;
 	}
 
+	protected boolean isCollide(Ball bl1, Ball bl2) {
+		return bl1.Next().intersects(bl2.Next());
+	}
+
 	// ball[]のなかの空いている(nullの)要素にballを生成する。
 	protected void receiveBall(String s) {
 		int i = 0;
@@ -196,5 +199,18 @@ public class GameFrame extends JFrame {
 		this.ball[i].setLocation(this.FRAME_SIZE.width - this.ball[i].width - this.ball[i].x, 1);
 		this.ball[i].setV(-this.ball[i].getVX(), (int) Math.abs(this.ball[i].getVY()));
 		this.ball[i].setVisible(true);
+	}
+
+	protected void collide(Ball bl1, Ball bl2) {
+		Dimension v1, v2, nv1, nv2;
+		final double e = 1; // 反発係数
+		v1 = bl1.getV();
+		v2 = bl2.getV();
+		nv1 = new Dimension((int) Math.floor(((1 - e) * v1.width + (1 + e) * v2.width) / 2),
+				(int) Math.floor(((1 - e) * v1.height + (1 + e) * v2.height) / 2));
+		nv2 = new Dimension((int) Math.floor(((1 + e) * v1.width + (1 - e) * v2.width) / 2),
+				(int) Math.floor(((1 + e) * v1.height + (1 - e) * v2.height) / 2));
+		bl1.setV(nv1);
+		bl2.setV(nv2);
 	}
 }

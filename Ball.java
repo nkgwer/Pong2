@@ -1,20 +1,21 @@
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.Color;
-import java.util.StringTokenizer;
 import java.util.Random;
+import java.util.StringTokenizer;
+
 // ボール
 public class Ball extends Rectangle {
 	private Dimension v;
 	private boolean isVisible;
-	private int r,g,b;
+	private int r, g, b;
+
 	public Ball(int nx, int ny, int nwidth, int nheight) {
 		super(nx, ny, nwidth, nheight);
 		this.v = new Dimension(0, 0);
 		Random rnd = new Random();
-		this.r = rnd.nextInt(155)+50;
-		this.g = rnd.nextInt(155)+50;
-		this.b = rnd.nextInt(155)+50;
+		this.r = rnd.nextInt(155) + 50;
+		this.g = rnd.nextInt(155) + 50;
+		this.b = rnd.nextInt(155) + 50;
 	}
 
 	public Ball(String s) {
@@ -66,13 +67,16 @@ public class Ball extends Rectangle {
 	public int getVY() {
 		return v.height;
 	}
-	public int getR(){
+
+	public int getR() {
 		return this.r;
 	}
-	public int getG(){
+
+	public int getG() {
 		return this.g;
 	}
-	public int getB(){
+
+	public int getB() {
 		return this.b;
 	}
 
@@ -99,6 +103,6 @@ public class Ball extends Rectangle {
 
 	public String toString() {
 		return "Ball: " + this.x + " " + this.y + " " + this.width + " " + this.height + " " + this.v.width + " "
-				+ this.v.height + " "+ this.r + " " + this.g + " " + this.b;
+				+ this.v.height + " " + this.r + " " + this.g + " " + this.b;
 	}
 }
