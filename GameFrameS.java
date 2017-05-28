@@ -4,12 +4,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import java.util.Random;
 
 // PongServer向けゲーム画面用クラス
 public class GameFrameS extends GameFrame implements ActionListener {
@@ -57,12 +56,12 @@ public class GameFrameS extends GameFrame implements ActionListener {
 		count = 0;
 		j = 1;
 		Random rnd = new Random();
-		
+
 		for (int i = 0; i < this.pongServer.number - 1; i++) {
-			int r = rnd.nextInt(155)+50;
-			int g = rnd.nextInt(155)+50;
-			int b = rnd.nextInt(155)+50;
-			pongServer.sendBall(i, new Ball("Ball: 185 1 30 30 1 1"+" "+r+" "+g+" "+b));
+			int r = rnd.nextInt(155) + 50;
+			int g = rnd.nextInt(155) + 50;
+			int b = rnd.nextInt(155) + 50;
+			pongServer.sendBall(i, new Ball("Ball: 185 1 30 30 1 1" + " " + r + " " + g + " " + b));
 		}
 		new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -89,6 +88,12 @@ public class GameFrameS extends GameFrame implements ActionListener {
 								ball[i].BoundX();
 							if (isReboundy(ball[i]))
 								ball[i].BoundY();
+							for (int j = i + 1; j < ball.length; j++) {
+								if (ball[j] != null)
+									if (isCollide(ball[i], ball[j])) {
+										collide(ball[i], ball[j]);
+									}
+							}
 							// バーに5回当たると縦の速さが1段階速くなる
 							if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
 								ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
@@ -98,6 +103,10 @@ public class GameFrameS extends GameFrame implements ActionListener {
 								ball[i].setVX(8);
 							if (ball[i].getVX() < -8)
 								ball[i].setVX(-8);
+							if (ball[i].getVY() > 8)
+								ball[i].setVY(8);
+							if (ball[i].getVY() < -8)
+								ball[i].setVY(-8);
 							ball[i].translate();
 						}
 					}

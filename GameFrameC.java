@@ -62,6 +62,12 @@ public class GameFrameC extends GameFrame {
 								ball[i].BoundX();
 							if (isReboundy(ball[i]))
 								ball[i].BoundY();
+							for (int j = i + 1; j < ball.length; j++) {
+								if (ball[j] != null)
+									if (isCollide(ball[i], ball[j])) {
+										collide(ball[i], ball[j]);
+									}
+							}
 							// バーに5回当たると縦の速さが1段階速くなる
 							if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
 								ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
