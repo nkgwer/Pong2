@@ -19,14 +19,13 @@ public class SelectFrame extends JFrame implements ActionListener {
 	/* スタート画面のタイトル */
 	private static final String FRAME_TITLE = "Pong!";
 	/* スタート画面のサイズ */
-	private static final Dimension FRAME_SIZE = new Dimension(1056, 575);
-	static final Dimension BUTTON_SIZE = new Dimension(120, 120);
+	private static final Dimension FRAME_SIZE = new Dimension(640, 480);
+	static final Dimension BUTTON_SIZE = new Dimension(120, 60);
 
 	private Container container;
-	private JLabel upperLabel;
+	// private JLabel upperLabel;
 	private JLabel label;
 	private JPanel lowerPanel;
-	private JPanel panel;
 	private JButton[] btn;
 	private MenuBar menuBar;
 	private Menu[] menu;
@@ -65,8 +64,8 @@ public class SelectFrame extends JFrame implements ActionListener {
 		setMenuBar(this.menuBar);
 
 		// upper label
-		this.upperLabel = new JLabel("Select which to start.");
-		this.upperLabel.setFont(new Font("", Font.PLAIN, 28));
+		// this.upperLabel = new JLabel("Select which to start.");
+		// this.upperLabel.setFont(new Font("", Font.PLAIN, 28));
 
 		this.btn = new JButton[2];
 
@@ -84,16 +83,8 @@ public class SelectFrame extends JFrame implements ActionListener {
 			this.btn[i].setFont(new Font("", Font.PLAIN, 40));
 		}
 
-		// JPanel panel: setting buttons
-		this.panel = new JPanel();
-		// this.panel.setLayout(new GridLayout(1, this.btn.length));
-		// for (int i = 0; i < this.btn.length; i++) {
-		// 	this.panel.add(this.btn[i]);
-		// }
-
 		ImageIcon icon = new ImageIcon("./image/title.jpg");
         this.label = new JLabel(icon);
-        this.label.add(this.panel);
 
         this.lowerPanel = new JPanel();
         this.lowerPanel.setLayout(new GridLayout(1, this.btn.length));
@@ -103,7 +94,7 @@ public class SelectFrame extends JFrame implements ActionListener {
 
 		// container
 		this.container = this.getContentPane();
-		this.container.add(this.upperLabel, BorderLayout.NORTH);
+		// this.container.add(this.upperLabel, BorderLayout.NORTH);
 		this.container.add(this.lowerPanel, BorderLayout.SOUTH);
 		this.container.add(this.label, BorderLayout.CENTER);
 	}
