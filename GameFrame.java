@@ -11,25 +11,26 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 // ゲーム画面用クラス
-public class GameFrame extends JFrame {
+public abstract class GameFrame extends JFrame {
 	static final String TITLE_STRING = "Pong!";
 	static final Dimension FRAME_SIZE = new Dimension(400, 566);
 
 	/* フレーム中の各壁: ボールが跳ね返る。 */
 	static final Rectangle CEILING = new Rectangle(-FRAME_SIZE.width, -FRAME_SIZE.height, 3 * FRAME_SIZE.width,
-			FRAME_SIZE.height);
+	        FRAME_SIZE.height);
 	static final Rectangle FLOOR = new Rectangle(-FRAME_SIZE.width, FRAME_SIZE.height, 3 * FRAME_SIZE.width,
-			FRAME_SIZE.height);
+	        FRAME_SIZE.height);
 	static final Rectangle LEFT = new Rectangle(-FRAME_SIZE.width, -FRAME_SIZE.height, FRAME_SIZE.width,
-			3 * FRAME_SIZE.height);
+	        3 * FRAME_SIZE.height);
 	static final Rectangle RIGHT = new Rectangle(FRAME_SIZE.width, -FRAME_SIZE.height, FRAME_SIZE.width,
-			3 * FRAME_SIZE.height);
+	        3 * FRAME_SIZE.height);
 
 	static final int BAR_V = 2; // barV: バーの横移動の速さ
 	static final int nKEY_LEFT = KeyEvent.VK_LEFT;
 	static final int nKEY_RIGHT = KeyEvent.VK_RIGHT;
 	static final int BALL_N = 10;
 
+	protected PongController pongController;
 	protected Graphics g;
 
 	protected Ball[] ball; // Rectangle型のサブクラス
@@ -39,7 +40,9 @@ public class GameFrame extends JFrame {
 	// count: ボールがbarとぶつかった回数
 	int count = 0, j;
 
-	public GameFrame() {
+	public GameFrame(PongController npc) {
+		this.pongController = npc;
+
 		this.setTitle(TITLE_STRING); // タイトルの設定
 		this.setSize(FRAME_SIZE); // サイズの設定
 		this.setResizable(false); // サイズを固定
@@ -101,31 +104,43 @@ public class GameFrame extends JFrame {
 					bar.setVX(BAR_V);
 
 				for (int i = 0; i < ball.length; i++) {
-					if (ball[i].getVisible()) {
+					if (ball[i] != null) {
 						if (isCeiling(ball[i])) {
+							pongController.sendBall(0, ball[i]);
 							ball[i].setVisible(false);
+							ball[i] = null;
+						} else {
+							if (isReboundLeft(ball[i]))
+								ball[i].setVX(Math.abs(ball[i].getVX()));
+							if (isReboundRight(ball[i]))
+								ball[i].setVX(-Math.abs(ball[i].getVX()));
+							if (isReboundx(ball[i]))
+								ball[i].BoundX();
+							if (isReboundy(ball[i]))
+								ball[i].BoundY();
+							for (int j = i + 1; j < ball.length; j++) {
+								if (ball[j] != null)
+									if (isCollide(ball[i], ball[j])) {
+										collide(ball[i], ball[j]);
+									}
+							}
+							// バーに5回当たると縦の速さが1段階速くなる
+							if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
+								ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
+								j++;
+							}
+							if (ball[i].getVX() > 8)
+								ball[i].setVX(8);
+							if (ball[i].getVX() < -8)
+								ball[i].setVX(-8);
+							if (ball[i].getVY() > 8)
+								ball[i].setVY(8);
+							if (ball[i].getVY() < -8)
+								ball[i].setVY(-8);
+							ball[i].translate();
 						}
-						if (isReboundLeft(ball[i]))
-							ball[i].setVX(Math.abs(ball[i].getVX()));
-						if (isReboundRight(ball[i]))
-							ball[i].setVX(-Math.abs(ball[i].getVX()));
-						if (isReboundx(ball[i]))
-							ball[i].BoundX();
-						if (isReboundy(ball[i]))
-							ball[i].BoundY();
-						// バーに5回当たると縦の速さが1段階速くなる
-						if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
-							ball[0].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
-							j++;
-						}
-						if (ball[i].getVX() > 8)
-							ball[i].setVX(8);
-						if (ball[i].getVX() < -8)
-							ball[i].setVX(-8);
-						ball[i].translate();
 					}
 				}
-
 				bar.translate();
 				repaint();
 			}
@@ -207,9 +222,9 @@ public class GameFrame extends JFrame {
 		v1 = bl1.getV();
 		v2 = bl2.getV();
 		nv1 = new Dimension((int) Math.floor(((1 - e) * v1.width + (1 + e) * v2.width) / 2),
-				(int) Math.floor(((1 - e) * v1.height + (1 + e) * v2.height) / 2));
+		                    (int) Math.floor(((1 - e) * v1.height + (1 + e) * v2.height) / 2));
 		nv2 = new Dimension((int) Math.floor(((1 + e) * v1.width + (1 - e) * v2.width) / 2),
-				(int) Math.floor(((1 + e) * v1.height + (1 - e) * v2.height) / 2));
+		                    (int) Math.floor(((1 + e) * v1.height + (1 - e) * v2.height) / 2));
 		bl1.setV(nv1);
 		bl2.setV(nv2);
 	}

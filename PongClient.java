@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 
 public class PongClient extends PongController implements Runnable {
 	StartFrameC sFrameC;
-	GameFrameC gFrameC;
+	GameFrame gFrame;
 	String hostName, sPlayerName;
 	private boolean isInitialized;
 	private boolean isStartFrame;
@@ -13,9 +13,9 @@ public class PongClient extends PongController implements Runnable {
 
 	private Socket socket;
 	private PongReceiver pongReceiver;
-	PongSender pongSender;
+	private PongSender pongSender;
 
-	PongClient() {
+	public PongClient() {
 		this.sFrameC = new StartFrameC(this);
 		this.isInitialized = false;
 	}
@@ -43,7 +43,7 @@ public class PongClient extends PongController implements Runnable {
 
 		while (this.isGameFrame) {
 			// ボールが自分のフィールドに来るまで待つ。
-			while (this.gFrameC.ball[0] != null) {
+			while (this.gFrame.ball[0] != null) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException ire) {
@@ -52,7 +52,7 @@ public class PongClient extends PongController implements Runnable {
 			}
 
 			// ボールが自分のフィールドから出ない間待つ。
-			while (this.gFrameC.ball[0] == null) {
+			while (this.gFrame.ball[0] == null) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException ire) {
@@ -182,9 +182,13 @@ public class PongClient extends PongController implements Runnable {
 			}
 		} else if (this.isGameFrame) {
 			if (s.startsWith("Ball:")) {
-				this.gFrameC.receiveBall(s);
+				this.gFrame.receiveBall(s);
 			}
 		}
+	}
+
+	public synchronized void sendBall(int n, Ball bl) {
+		pongSender.send(bl.toString());
 	}
 
 	public synchronized void terminateConnection(int i) {
@@ -218,12 +222,12 @@ public class PongClient extends PongController implements Runnable {
 	}
 
 	private void changeFrameStoG() {
-		this.gFrameC = new GameFrameC(this);
+		this.gFrame = new GameFrameC(this);
 		System.out.println("Closing: Start Frame");
 		this.isGameFrame = true;
 		this.isStartFrame = false;
 		this.sFrameC.setVisible(false);
 		System.out.println("Opening: Game Frame");
-		this.gFrameC.setVisible(true);
+		this.gFrame.setVisible(true);
 	}
 }

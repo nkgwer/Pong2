@@ -16,7 +16,7 @@ public class PongServer extends PongController implements Runnable {
 	private SocketConnector sConnector;
 	private Socket[] socket;
 	private PongReceiver[] pongReceiver;
-	PongSender[] pongSender;
+	private PongSender[] pongSender;
 	private String[] str;
 
 	public PongServer() {
