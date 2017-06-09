@@ -1,21 +1,22 @@
 import java.io.IOException;
 import java.net.Socket;
 
-public class PongServer implements Runnable {
+public class PongServer extends PongController implements Runnable {
 	public static final int PORT = 8080; // ポート番号を設定する．
 	private static final int MIN_PORT = 1024; // 設定できる最小のポート番号
 	private static final int MAX_PORT = 65535; // 設定できる最大のポート番号
 	private static final int INVALID_PORT_NUMBER = -1;
 	private static boolean isServer = false;
-	private boolean isInitialized, isStartFrame, isGameFrame;
 	StartFrameS sFrame;
 	GameFrameS gFrame;
-	String usrname;
-	Integer number;
+	private boolean isInitialized;
+	private boolean isStartFrame;
+	private boolean isGameFrame;
+
 	private SocketConnector sConnector;
 	private Socket[] socket;
-	private PongReceiverS[] pongReceiver;
-	PongSenderS[] pongSender;
+	private PongReceiver[] pongReceiver;
+	PongSender[] pongSender;
 	private String[] str;
 
 	public PongServer() {
@@ -32,7 +33,7 @@ public class PongServer implements Runnable {
 		this.initialize();
 		this.waitBtnPushed();
 
-		this.usrname = this.sFrame.textField1.getText(); // user name
+		this.userName = this.sFrame.textField1.getText(); // user name
 		this.number = Integer.parseInt((String) this.sFrame.textField2.getSelectedItem()); // number
 																							// of
 																							// players
@@ -160,8 +161,8 @@ public class PongServer implements Runnable {
 			return;
 		}
 		this.socket = new Socket[n];
-		this.pongReceiver = new PongReceiverS[n];
-		this.pongSender = new PongSenderS[n];
+		this.pongReceiver = new PongReceiver[n];
+		this.pongSender = new PongSender[n];
 		Thread thread = new Thread(this.sConnector);
 		thread.start();
 
@@ -241,8 +242,8 @@ public class PongServer implements Runnable {
 				return false;
 			}
 			this.socket[i] = nsocket;
-			this.pongReceiver[i] = PongReceiverS.createReceiver(this, nsocket, i); // 受信の設定
-			this.pongSender[i] = PongSenderS.createSender(this, nsocket, i); // 送信の設定
+			this.pongReceiver[i] = PongReceiver.createReceiver(this, nsocket, i); // 受信の設定
+			this.pongSender[i] = PongSender.createSender(this, nsocket, i); // 送信の設定
 		} catch (IOException ioe) {
 			this.socket[i] = null;
 			this.pongReceiver[i] = null;
@@ -259,7 +260,7 @@ public class PongServer implements Runnable {
 		this.sConnector.setReceivedNow(true);
 		this.sConnector.transNumberOfSocket(1);
 
-		this.pongSender[i].send("Server's Name: " + this.usrname);
+		this.pongSender[i].send("Server's Name: " + this.userName);
 
 		return true;
 	}

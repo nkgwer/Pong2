@@ -3,16 +3,17 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class PongClient implements Runnable {
+public class PongClient extends PongController implements Runnable {
 	StartFrameC sFrameC;
 	GameFrameC gFrameC;
-	String userName, hostName, sPlayerName;
+	String hostName, sPlayerName;
 	private boolean isInitialized;
+	private boolean isStartFrame;
+	private boolean isGameFrame;
+
 	private Socket socket;
-	private PongReceiverC pongReceiver;
-	PongSenderC pongSender;
-	int Number;
-	boolean isStartFrame, isGameFrame;
+	private PongReceiver pongReceiver;
+	PongSender pongSender;
 
 	PongClient() {
 		this.sFrameC = new StartFrameC(this);
@@ -139,7 +140,7 @@ public class PongClient implements Runnable {
 
 		// 受信の設定
 		try {
-			this.pongReceiver = PongReceiverC.createReceiver(this, this.socket);
+			this.pongReceiver = PongReceiver.createReceiver(this, this.socket);
 		} catch (IOException ioe) {
 			String msg = "Failed setting receiver.";
 			System.err.println(msg);
@@ -152,7 +153,7 @@ public class PongClient implements Runnable {
 
 		// 送信の設定
 		try {
-			this.pongSender = PongSenderC.createSender(this, this.socket);
+			this.pongSender = PongSender.createSender(this, this.socket);
 		} catch (IOException ioe) {
 			String msg = "Failed setting sender.";
 			System.err.println(msg);
@@ -166,11 +167,11 @@ public class PongClient implements Runnable {
 	}
 
 	// pongReceiverで受信した文字列に対する処理
-	public synchronized void receive(String s) {
+	public synchronized void receive(String s, int ri) {
 		if (this.isStartFrame) {
 			if (s.startsWith("Number of Player: ")) {
-				this.Number = Integer.parseInt(s.replaceFirst("Number of Player: ", ""));
-				System.out.println("Number of players: " + this.Number + "人");
+				this.number = Integer.parseInt(s.replaceFirst("Number of Player: ", ""));
+				System.out.println("Number of players: " + this.number + "人");
 			} else if (s.startsWith("Server's Name: ")) {
 				String str = s.replaceFirst("Server's Name: ", "");
 				this.sPlayerName = str;
@@ -186,7 +187,7 @@ public class PongClient implements Runnable {
 		}
 	}
 
-	public synchronized void terminateConnection() {
+	public synchronized void terminateConnection(int i) {
 		this.closeSocketStream();
 	}
 
