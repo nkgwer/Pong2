@@ -8,7 +8,7 @@ import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,11 +19,13 @@ public class SelectFrame extends JFrame implements ActionListener {
 	/* スタート画面のタイトル */
 	private static final String FRAME_TITLE = "Pong!";
 	/* スタート画面のサイズ */
-	private static final Dimension FRAME_SIZE = new Dimension(640, 360);
-	static final Dimension BUTTON_SIZE = new Dimension(300, 300);
+	private static final Dimension FRAME_SIZE = new Dimension(1056, 575);
+	static final Dimension BUTTON_SIZE = new Dimension(120, 120);
 
 	private Container container;
 	private JLabel upperLabel;
+	private JLabel label;
+	private JPanel lowerPanel;
 	private JPanel panel;
 	private JButton[] btn;
 	private MenuBar menuBar;
@@ -84,15 +86,26 @@ public class SelectFrame extends JFrame implements ActionListener {
 
 		// JPanel panel: setting buttons
 		this.panel = new JPanel();
-		this.panel.setLayout(new GridLayout(1, this.btn.length));
+		// this.panel.setLayout(new GridLayout(1, this.btn.length));
+		// for (int i = 0; i < this.btn.length; i++) {
+		// 	this.panel.add(this.btn[i]);
+		// }
+
+		ImageIcon icon = new ImageIcon("./image/title.jpg");
+        this.label = new JLabel(icon);
+        this.label.add(this.panel);
+
+        this.lowerPanel = new JPanel();
+        this.lowerPanel.setLayout(new GridLayout(1, this.btn.length));
 		for (int i = 0; i < this.btn.length; i++) {
-			this.panel.add(this.btn[i]);
+			this.lowerPanel.add(this.btn[i]);
 		}
 
 		// container
 		this.container = this.getContentPane();
 		this.container.add(this.upperLabel, BorderLayout.NORTH);
-		this.container.add(this.panel, BorderLayout.CENTER);
+		this.container.add(this.lowerPanel, BorderLayout.SOUTH);
+		this.container.add(this.label, BorderLayout.CENTER);
 	}
 
 	public void actionPerformed(ActionEvent e) {
