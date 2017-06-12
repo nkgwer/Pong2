@@ -16,6 +16,7 @@ import java.io.*;
 // ゲーム画面用クラス
 public abstract class GameFrame extends JFrame {
 	Clip hit; // サウンドクリップ
+	Clip bgm;
 	static final String TITLE_STRING = "Pong!";
 	static final Dimension FRAME_SIZE = new Dimension(400, 566);
 
@@ -53,7 +54,8 @@ public abstract class GameFrame extends JFrame {
 	int count = 0, j;
 
 	public GameFrame(int n, PongController npc) {
-		hit = getClip("hit.wav"); // BGM読み込み
+		hit = getClip("hit.wav"); 
+		bgm = getClip("BGM.wav");
 
 		this.pongController = npc;
 
@@ -125,6 +127,8 @@ public abstract class GameFrame extends JFrame {
 	public void init() {
 		count = 0;
 		j = 1;
+		bgm.setFramePosition(0);
+        bgm.loop(Clip.LOOP_CONTINUOUSLY);
 		new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// barの動く方向の設定
