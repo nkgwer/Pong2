@@ -14,6 +14,9 @@ public abstract class PongController {
 	// ボールの情報を送信する
 	abstract void sendBall(int n, Ball bl);
 
+	// 得点の情報を送信する
+	// abstract void sendPoint(int n, int point);
+
 	// 接続を終了する
 	abstract void terminateConnection(int i);
 }

@@ -1,11 +1,12 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -14,8 +15,9 @@ public class GameFrameS extends GameFrame implements ActionListener {
 	Container cont;
 	JPanel p;
 	JButton btn;
+	int point[];
 
-	public GameFrameS(PongController npc) {
+	public GameFrameS(int n, PongController npc) {
 		super(npc);
 
 		// スタートボタン
@@ -40,6 +42,11 @@ public class GameFrameS extends GameFrame implements ActionListener {
 
 		// 最初はボールがある。
 		ball[0].setVisible(true);
+
+		point = new int[n];
+		for (int i = 0; i < point.length; i++) {
+			point[i] = 0;
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -52,13 +59,12 @@ public class GameFrameS extends GameFrame implements ActionListener {
 		Random rnd = new Random();
 
 		for (int i = 0; i < this.pongController.number - 1; i++) {
+			int vx = (int) Math.ceil(3 * Math.random() - 1);
 			int r = rnd.nextInt(155) + 50;
 			int g = rnd.nextInt(155) + 50;
 			int b = rnd.nextInt(155) + 50;
-			this.pongController.sendBall(i, new Ball("Ball: 185 1 30 30 1 1" + " " + r + " " + g + " " + b));
+			this.pongController.sendBall(i, new Ball("Ball: 185 1 30 30 " + vx + " 1" + " " + r + " " + g + " " + b));
 		}
-		count = 0;
-		j = 1;
 		super.init();
 	}
 }

@@ -59,11 +59,6 @@ public class PongClient extends PongController implements Runnable {
 					// Do Nothing.
 				}
 			}
-
-			// サーバーに、上に行ったボールの位置と速度を送信する。
-			// this.pongSender.send(
-			// this.gFrameC.ball[0].x + " " + this.gFrameC.ball[0].getVX() + " "
-			// + this.gFrameC.ball[0].getVY());
 		}
 
 		this.pongSender.send("END");
@@ -77,8 +72,7 @@ public class PongClient extends PongController implements Runnable {
 			e.printStackTrace();
 		}
 		System.out.println("Closed: " + this.socket.getRemoteSocketAddress());
-		// this.sf.setVisible(false);
-		// System.exit(0);
+		System.exit(0);
 	}
 
 	public void initialize() {
