@@ -58,6 +58,7 @@ public class PongServer extends PongController implements Runnable {
 
 		for (int i = 0; i < this.number - 1; i++) {
 			this.pongSender[i].send("Number of Player: " + this.number.toString());
+			this.pongSender[i].send("Your ID: " + i);
 		}
 
 		try {
@@ -174,6 +175,14 @@ public class PongServer extends PongController implements Runnable {
 		pongSender[n].send(bl.toString());
 	}
 
+	public synchronized void sendPoint(int i, String points) {
+		pongSender[i].send(points);
+	}
+
+	public synchronized void sendIsWin(int i, String s) {
+		pongSender[i].send(s);
+	}
+
 	public synchronized void terminateConnection(int i) {
 		this.closeSocketStream(i);
 
@@ -194,7 +203,7 @@ public class PongServer extends PongController implements Runnable {
 					this.pongSender[i + 1].send(s);
 				else this.gFrame.receiveBall(s);
 			} else if (s.startsWith("Point: ")) {
-
+				this.gFrame.receivePoint(s);
 			}
 		}
 	}

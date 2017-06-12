@@ -29,8 +29,10 @@ public abstract class GameFrame extends JFrame {
 	static final int nKEY_LEFT = KeyEvent.VK_LEFT;
 	static final int nKEY_RIGHT = KeyEvent.VK_RIGHT;
 	static final int BALL_N = 10;
+	static final int MAX_POINT = 100;
 
 	public static final Font font = new Font("Sans-Serif", Font.PLAIN, 20);
+	public static final Font font2 = new Font("Sans-Serif", Font.BOLD, 80);
 
 	protected PongController pongController;
 	protected Graphics g;
@@ -39,11 +41,14 @@ public abstract class GameFrame extends JFrame {
 	protected Bar bar; // Rectangle型のサブクラス
 	protected boolean left, right, kz, kx;
 	int mypoint;
+	int point[]; // your point: point[id - 1]
+	int id; // server: 1, client: 2 ~ n
+	int winorlose = 0; // 0: yet, 1; win, 2: lose
 
 	// count: ボールがbarとぶつかった回数
 	int count = 0, j;
 
-	public GameFrame(PongController npc) {
+	public GameFrame(int n, PongController npc) {
 		this.pongController = npc;
 
 		this.setTitle(TITLE_STRING); // タイトルの設定
@@ -64,6 +69,10 @@ public abstract class GameFrame extends JFrame {
 
 		// Point
 		mypoint = 0;
+		point = new int[n];
+		for (int i = 0; i < point.length; i++) {
+			point[i] = 0;
+		}
 
 		try {
 			g = getGraphics();
@@ -103,56 +112,63 @@ public abstract class GameFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// barの動く方向の設定
 				bar.setVX(0);
+				if (winorlose == 0) {
+					if (left && !right && bar.getX() >= 0)
+						bar.setVX(-BAR_V);
+					else if (right && !left && bar.getX() <= 300)
+						bar.setVX(BAR_V);
 
-				if (left && !right && bar.getX() >= 0)
-					bar.setVX(-BAR_V);
-				else if (right && !left && bar.getX() <= 300)
-					bar.setVX(BAR_V);
-
-				for (int i = 0; i < ball.length; i++) {
-					if (ball[i] != null) {
-						if (isCeiling(ball[i])) {
-							pongController.sendBall(0, ball[i]);
-							ball[i].setVisible(false);
-							ball[i] = null;
-						} else if (isFloor(ball[i])) {
-							ball[i].boundY();
-							mypoint -= 10;
-						} else {
-							if (isReboundLeft(ball[i]))
-								ball[i].setVX(Math.abs(ball[i].getVX()));
-							if (isReboundRight(ball[i]))
-								ball[i].setVX(-Math.abs(ball[i].getVX()));
-							if (isReboundx(ball[i]))
-								ball[i].boundX();
-							if (isReboundy(ball[i]) && ball[i].getVY() > 0) {
+					for (int i = 0; i < ball.length; i++) {
+						if (ball[i] != null) {
+							if (isCeiling(ball[i])) {
+								pongController.sendBall(0, ball[i]);
+								ball[i].setVisible(false);
+								ball[i] = null;
+							} else if (isFloor(ball[i])) {
 								ball[i].boundY();
-								mypoint += 10;
+								point[id - 1] -= 10;
+								sendPoint(id, point[id - 1]);
+							} else {
+								if (isReboundLeft(ball[i]))
+									ball[i].setVX(Math.abs(ball[i].getVX()));
+								if (isReboundRight(ball[i]))
+									ball[i].setVX(-Math.abs(ball[i].getVX()));
+								if (isReboundx(ball[i]))
+									ball[i].boundX();
+								if (isReboundy(ball[i]) && ball[i].getVY() > 0) {
+									ball[i].boundY();
+									point[id - 1] += 10;
+									sendPoint(id, point[id - 1]);
+								}
+								for (int j = i + 1; j < ball.length; j++) {
+									if (ball[j] != null)
+										if (isCollide(ball[i], ball[j])) {
+											collide(ball[i], ball[j]);
+										}
+								}
+								// バーに5回当たると縦の速さが1段階速くなる
+								if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
+									ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
+									j++;
+								}
+								if (ball[i].getVX() > 8)
+									ball[i].setVX(8);
+								if (ball[i].getVX() < -8)
+									ball[i].setVX(-8);
+								if (ball[i].getVY() > 8)
+									ball[i].setVY(8);
+								if (ball[i].getVY() < -8)
+									ball[i].setVY(-8);
+								if (ball[i].getVY() == 0)
+									ball[i].setVY(1);
+								ball[i].translate();
 							}
-							for (int j = i + 1; j < ball.length; j++) {
-								if (ball[j] != null)
-									if (isCollide(ball[i], ball[j])) {
-										collide(ball[i], ball[j]);
-									}
-							}
-							// バーに5回当たると縦の速さが1段階速くなる
-							if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
-								ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
-								j++;
-							}
-							if (ball[i].getVX() > 8)
-								ball[i].setVX(8);
-							if (ball[i].getVX() < -8)
-								ball[i].setVX(-8);
-							if (ball[i].getVY() > 8)
-								ball[i].setVY(8);
-							if (ball[i].getVY() < -8)
-								ball[i].setVY(-8);
-							ball[i].translate();
 						}
+
 					}
+					if (isMax() && winorlose == 0) terminateGame();
+					bar.translate();
 				}
-				bar.translate();
 				repaint();
 			}
 		}).start();
@@ -176,7 +192,18 @@ public abstract class GameFrame extends JFrame {
 
 		// ポイント表示
 		g.setFont(font);
-		g.drawString("Point: " + mypoint, 30, 50);
+		for (int i = 0; i < point.length; i++) {
+			g.drawString("Player " + (i + 1) + ": " + point[i], 30 + 210 * (i % 2), 50 + 30 * (i / 2));
+		}
+		if (winorlose == 1) {
+			g.setFont(font2);
+			g.setColor(Color.red);
+			g.drawString("WIN!", 110, 250);
+		} else if (winorlose == 2) {
+			g.setFont(font2);
+			g.setColor(Color.blue);
+			g.drawString("LOSE...", 80, 250);
+		}
 	}
 
 	protected boolean isCeiling(Ball bl) {
@@ -232,6 +259,9 @@ public abstract class GameFrame extends JFrame {
 		this.ball[i].setVisible(true);
 	}
 
+	abstract void receivePoint(String s);
+	abstract void sendPoint(int id, int point);
+
 	protected void collide(Ball bl1, Ball bl2) {
 		Dimension v1, v2, nv1, nv2;
 		final double e = 1; // 反発係数
@@ -243,5 +273,21 @@ public abstract class GameFrame extends JFrame {
 		                    (int) Math.floor(((1 + e) * v1.height + (1 - e) * v2.height) / 2));
 		bl1.setV(nv1);
 		bl2.setV(nv2);
+	}
+
+	protected boolean isMax() {
+		for (int i = 0; i < point.length; i++) {
+			if (point[i] >= MAX_POINT) return true;
+		}
+		return false;
+	}
+
+	protected void terminateGame() {}
+
+	public void win() {
+		winorlose = 1;
+	}
+	public void lose() {
+		winorlose = 2;
 	}
 }

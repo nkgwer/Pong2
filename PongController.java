@@ -1,6 +1,6 @@
 public abstract class PongController {
 	String userName;
-	Integer number;
+	Integer number; // number of player
 
 	// 初期化
 	abstract void initialize();
@@ -15,7 +15,10 @@ public abstract class PongController {
 	abstract void sendBall(int n, Ball bl);
 
 	// 得点の情報を送信する
-	// abstract void sendPoint(int n, int point);
+	abstract void sendPoint(int i, String points);
+
+	// 勝敗を送信する
+	public void sendIsWin(int i, String s) {}
 
 	// 接続を終了する
 	abstract void terminateConnection(int i);

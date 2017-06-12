@@ -7,6 +7,7 @@ public class PongClient extends PongController implements Runnable {
 	StartFrameC sFrameC;
 	GameFrame gFrame;
 	String hostName, sPlayerName;
+	int id;
 	private boolean isInitialized;
 	private boolean isStartFrame;
 	private boolean isGameFrame;
@@ -170,6 +171,10 @@ public class PongClient extends PongController implements Runnable {
 				String str = s.replaceFirst("Server's Name: ", "");
 				this.sPlayerName = str;
 				this.sFrameC.logAppendln("Connected to " + str + ".");
+			} else if (s.startsWith("Your ID: ")) {
+				String str = s.replaceFirst("Your ID: ", "");
+				this.id = Integer.parseInt(str);
+				this.sFrameC.logAppendln("My ID: " + str + ".");
 				this.sFrameC.logAppendln("Waiting...");
 			} else if (s.equals("Close Start Frame")) {
 				this.changeFrameStoG();
@@ -177,12 +182,22 @@ public class PongClient extends PongController implements Runnable {
 		} else if (this.isGameFrame) {
 			if (s.startsWith("Ball:")) {
 				this.gFrame.receiveBall(s);
+			} else if (s.startsWith("Point:")) {
+				this.gFrame.receivePoint(s);
+			} else if (s.equals("Win")) {
+				this.gFrame.win();
+			} else if (s.equals("Lose")) {
+				this.gFrame.lose();
 			}
 		}
 	}
 
 	public synchronized void sendBall(int n, Ball bl) {
 		pongSender.send(bl.toString());
+	}
+
+	public synchronized void sendPoint(int i, String points) {
+		pongSender.send(points);
 	}
 
 	public synchronized void terminateConnection(int i) {
@@ -216,7 +231,7 @@ public class PongClient extends PongController implements Runnable {
 	}
 
 	private void changeFrameStoG() {
-		this.gFrame = new GameFrameC(this);
+		this.gFrame = new GameFrameC(this.number, this.id, this);
 		System.out.println("Closing: Start Frame");
 		this.isGameFrame = true;
 		this.isStartFrame = false;
