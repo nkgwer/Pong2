@@ -46,7 +46,7 @@ public class Bar extends Rectangle {
 	}
 
 	// 次の時間でのバーの位置
-	public Bar Next() {
+	public Bar next() {
 		return new Bar(x + v.width, y + v.height, width, height);
 
 	}

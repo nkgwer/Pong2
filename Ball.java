@@ -89,15 +89,15 @@ public class Ball extends Rectangle {
 	}
 
 	// 次の時間でのボールの位置
-	public Ball Next() {
+	public Ball next() {
 		return new Ball(x + v.width, y + v.height, width, height);
 	}
 
-	public void BoundX() {
+	public void boundX() {
 		v.width = -v.width;
 	}
 
-	public void BoundY() {
+	public void boundY() {
 		v.height = -v.height;
 	}
 

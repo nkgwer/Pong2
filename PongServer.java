@@ -16,7 +16,7 @@ public class PongServer extends PongController implements Runnable {
 	private SocketConnector sConnector;
 	private Socket[] socket;
 	private PongReceiver[] pongReceiver;
-	PongSender[] pongSender;
+	private PongSender[] pongSender;
 	private String[] str;
 
 	public PongServer() {
@@ -34,9 +34,7 @@ public class PongServer extends PongController implements Runnable {
 		this.waitBtnPushed();
 
 		this.userName = this.sFrame.textField1.getText(); // user name
-		this.number = Integer.parseInt((String) this.sFrame.textField2.getSelectedItem()); // number
-																							// of
-																							// players
+		this.number = Integer.parseInt((String) this.sFrame.textField2.getSelectedItem()); // number of players
 
 		// create server socket
 		String[] args = new String[0];
@@ -60,6 +58,7 @@ public class PongServer extends PongController implements Runnable {
 
 		for (int i = 0; i < this.number - 1; i++) {
 			this.pongSender[i].send("Number of Player: " + this.number.toString());
+			this.pongSender[i].send("Your ID: " + i);
 		}
 
 		try {
@@ -94,9 +93,7 @@ public class PongServer extends PongController implements Runnable {
 			}
 		}
 		System.out.println("closing...");
-		for (
-
-		int i = 0; i < this.number - 1; i++)
+		for (int i = 0; i < this.number - 1; i++)
 			this.closeSocketStream(i);
 		this.sConnector.terminate();
 
@@ -178,6 +175,14 @@ public class PongServer extends PongController implements Runnable {
 		pongSender[n].send(bl.toString());
 	}
 
+	public synchronized void sendPoint(int i, String points) {
+		pongSender[i].send(points);
+	}
+
+	public synchronized void sendIsWin(int i, String s) {
+		pongSender[i].send(s);
+	}
+
 	public synchronized void terminateConnection(int i) {
 		this.closeSocketStream(i);
 
@@ -193,10 +198,13 @@ public class PongServer extends PongController implements Runnable {
 				this.sFrame.logAppendln(s.replaceFirst("Joined: ", "") + " joined.");
 			}
 		} else if (this.isGameFrame) {
-			if (i + 1 < this.number - 1)
-				this.pongSender[i + 1].send(s);
-			else
-				this.gFrame.receiveBall(s);
+			if (s.startsWith("Ball: ")) {
+				if (i + 1 < this.number - 1)
+					this.pongSender[i + 1].send(s);
+				else this.gFrame.receiveBall(s);
+			} else if (s.startsWith("Point: ")) {
+				this.gFrame.receivePoint(s);
+			}
 		}
 	}
 
@@ -266,7 +274,7 @@ public class PongServer extends PongController implements Runnable {
 	}
 
 	private void changeFrameStoG() {
-		this.gFrame = new GameFrameS(this);
+		this.gFrame = new GameFrameS(this.number, this);
 		System.out.println("Closing: Start Frame");
 		this.isGameFrame = true;
 		this.isStartFrame = false;
