@@ -9,9 +9,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import javax.sound.sampled.*;
+import java.io.*;
+
 
 // ゲーム画面用クラス
 public abstract class GameFrame extends JFrame {
+	Clip hit; // サウンドクリップ
 	static final String TITLE_STRING = "Pong!";
 	static final Dimension FRAME_SIZE = new Dimension(400, 566);
 
@@ -49,6 +53,8 @@ public abstract class GameFrame extends JFrame {
 	int count = 0, j;
 
 	public GameFrame(int n, PongController npc) {
+		hit = getClip("hit.wav"); // BGM読み込み
+
 		this.pongController = npc;
 
 		this.setTitle(TITLE_STRING); // タイトルの設定
@@ -104,7 +110,18 @@ public abstract class GameFrame extends JFrame {
 			}
 		});
 	}
-
+	public static Clip getClip(String filename) {
+        Clip clip = null;
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File(filename));
+            clip = (Clip)AudioSystem.getLine(new Line.Info(Clip.class));
+            clip.open(ais);
+        } catch(Exception e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+        return clip;
+    }
 	public void init() {
 		count = 0;
 		j = 1;
@@ -211,6 +228,7 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	protected boolean isFloor(Ball bl) {
+
 		return bl.next().intersects(FLOOR);
 	}
 
@@ -219,6 +237,7 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	protected boolean isReboundRight(Ball bl) {
+
 		return bl.next().intersects(RIGHT);
 	}
 
@@ -227,6 +246,9 @@ public abstract class GameFrame extends JFrame {
 		if (bl.next().intersects(bar.next()) && (bl.x + bl.width <= bar.x || bl.x >= bar.x + bar.width)) {
 			b = true;
 			bl.setVX(bl.getVX() - bar.getVX());
+			hit.setFramePosition(0); // 巻き戻し
+            hit.start();
+            hit.stop();
 			count++;
 		}
 		return b;
@@ -238,6 +260,9 @@ public abstract class GameFrame extends JFrame {
 		if (bl.next().intersects(bar.next()) && (bl.y + bl.height <= bar.y || bl.y >= bar.y + bar.height)) {
 			b = true;
 			bl.setVX(bl.getVX() + (int) Math.signum(bar.getVX()));
+			hit.setFramePosition(0); // 巻き戻し
+            hit.start();
+            hit.stop();
 			count++;
 		}
 		return b;
