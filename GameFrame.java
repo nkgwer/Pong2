@@ -114,10 +114,12 @@ public abstract class GameFrame extends JFrame {
 			}
 		});
 	}
-	public static Clip getClip(String filename) {
+	public Clip getClip(String filename) {
 		Clip clip = null;
 		try {
-			AudioInputStream ais = AudioSystem.getAudioInputStream(new File(filename));
+			// AudioInputStream ais = AudioSystem.getAudioInputStream(new File(filename));
+			ClassLoader cl = this.getClass().getClassLoader();
+			AudioInputStream ais = AudioSystem.getAudioInputStream(cl.getResource(filename));
 			clip = (Clip)AudioSystem.getLine(new Line.Info(Clip.class));
 			clip.open(ais);
 		} catch (Exception e) {
@@ -309,6 +311,10 @@ public abstract class GameFrame extends JFrame {
 		hit.stop();
 		hit.setFramePosition(0); // 巻き戻し
 		hit.start();
+		while (isCollide(bl1, bl2)) {
+			bl1.translate();
+			bl2.translate();
+		}
 	}
 
 	protected boolean isMax() {
