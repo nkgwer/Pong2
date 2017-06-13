@@ -52,9 +52,11 @@ public abstract class GameFrame extends JFrame {
 
 	// count: ボールがbarとぶつかった回数
 	int count = 0, j;
+	Color[] bColor = {new Color(255, 255, 255, 100), Color.red, Color.blue};
+	int bcolori = 0; // 0: white, 1: red, 2: blue
 
 	public GameFrame(int n, PongController npc) {
-		hit = getClip("hit.wav"); 
+		hit = getClip("hit.wav");
 		bgm = getClip("BGM.wav");
 
 		this.pongController = npc;
@@ -113,22 +115,22 @@ public abstract class GameFrame extends JFrame {
 		});
 	}
 	public static Clip getClip(String filename) {
-        Clip clip = null;
-        try {
-            AudioInputStream ais = AudioSystem.getAudioInputStream(new File(filename));
-            clip = (Clip)AudioSystem.getLine(new Line.Info(Clip.class));
-            clip.open(ais);
-        } catch(Exception e) {
-            System.out.println(e);
-            System.exit(0);
-        }
-        return clip;
-    }
+		Clip clip = null;
+		try {
+			AudioInputStream ais = AudioSystem.getAudioInputStream(new File(filename));
+			clip = (Clip)AudioSystem.getLine(new Line.Info(Clip.class));
+			clip.open(ais);
+		} catch (Exception e) {
+			System.out.println(e);
+			System.exit(0);
+		}
+		return clip;
+	}
 	public void init() {
 		count = 0;
 		j = 1;
 		bgm.setFramePosition(0);
-        bgm.loop(Clip.LOOP_CONTINUOUSLY);
+		bgm.loop(Clip.LOOP_CONTINUOUSLY);
 		new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// barの動く方向の設定
@@ -147,8 +149,9 @@ public abstract class GameFrame extends JFrame {
 								ball[i] = null;
 							} else if (isFloor(ball[i])) {
 								ball[i].boundY();
-								point[id - 1] -= 10;
+								point[id - 1] -= 5;
 								sendPoint(id, point[id - 1]);
+								bcolori = 2;
 							} else {
 								if (isReboundLeft(ball[i]))
 									ball[i].setVX(Math.abs(ball[i].getVX()));
@@ -160,6 +163,7 @@ public abstract class GameFrame extends JFrame {
 									ball[i].boundY();
 									point[id - 1] += 10;
 									sendPoint(id, point[id - 1]);
+									bcolori = 1;
 								}
 								for (int j = i + 1; j < ball.length; j++) {
 									if (ball[j] != null)
@@ -197,8 +201,9 @@ public abstract class GameFrame extends JFrame {
 
 	public synchronized void paint(Graphics g) {
 		// 描画
-		g.setColor(new Color(255, 255, 255, 100));
+		g.setColor(bColor[bcolori]);
 		g.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
+		bcolori = 0;
 
 		// g.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
@@ -241,7 +246,6 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	protected boolean isReboundRight(Ball bl) {
-
 		return bl.next().intersects(RIGHT);
 	}
 
@@ -250,9 +254,9 @@ public abstract class GameFrame extends JFrame {
 		if (bl.next().intersects(bar.next()) && (bl.x + bl.width <= bar.x || bl.x >= bar.x + bar.width)) {
 			b = true;
 			bl.setVX(bl.getVX() - bar.getVX());
+			hit.stop();
 			hit.setFramePosition(0); // 巻き戻し
-            hit.start();
-            hit.stop();
+			hit.start();
 			count++;
 		}
 		return b;
@@ -264,9 +268,9 @@ public abstract class GameFrame extends JFrame {
 		if (bl.next().intersects(bar.next()) && (bl.y + bl.height <= bar.y || bl.y >= bar.y + bar.height)) {
 			b = true;
 			bl.setVX(bl.getVX() + (int) Math.signum(bar.getVX()));
+			hit.stop();
 			hit.setFramePosition(0); // 巻き戻し
-            hit.start();
-            hit.stop();
+			hit.start();
 			count++;
 		}
 		return b;
@@ -302,6 +306,9 @@ public abstract class GameFrame extends JFrame {
 		                    (int) Math.floor(((1 + e) * v1.height + (1 - e) * v2.height) / 2));
 		bl1.setV(nv1);
 		bl2.setV(nv2);
+		hit.stop();
+		hit.setFramePosition(0); // 巻き戻し
+		hit.start();
 	}
 
 	protected boolean isMax() {
