@@ -83,7 +83,9 @@ public class SelectFrame extends JFrame implements ActionListener {
 			this.btn[i].setFont(new Font("", Font.PLAIN, 40));
 		}
 
-		ImageIcon icon = new ImageIcon("./image/title.jpg");
+		ClassLoader cl = this.getClass().getClassLoader();
+		ImageIcon icon = new ImageIcon(cl.getResource("./image/title.jpg"));
+		// ImageIcon icon = new ImageIcon("./image/title.jpg");
         this.label = new JLabel(icon);
 
         this.lowerPanel = new JPanel();
