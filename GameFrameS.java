@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -7,14 +6,12 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 import java.util.StringTokenizer;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 // PongServer向けゲーム画面用クラス
-public class GameFrameS extends GameFrame implements ActionListener {
-	Container cont;
-	JPanel p;
+public final class GameFrameS extends GameFrame implements ActionListener {
+	private Container cont;
+	private JPanel p;
 	JButton btn;
 
 	public GameFrameS(int n, PongController npc) {

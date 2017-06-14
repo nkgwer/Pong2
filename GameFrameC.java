@@ -4,9 +4,9 @@ import java.util.StringTokenizer;
 import javax.swing.JPanel;
 
 // PongClient向けゲーム画面用クラス
-public class GameFrameC extends GameFrame {
-	Container cont;
-	JPanel p;
+public final class GameFrameC extends GameFrame {
+	private Container cont;
+	private JPanel p;
 
 	public GameFrameC(int n, int nid, PongController npc) {
 		super(n, npc);

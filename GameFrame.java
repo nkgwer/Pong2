@@ -15,8 +15,6 @@ import java.io.*;
 
 // ゲーム画面用クラス
 public abstract class GameFrame extends JFrame {
-	Clip hit; // サウンドクリップ
-	Clip bgm;
 	static final String TITLE_STRING = "Pong!";
 	static final Dimension FRAME_SIZE = new Dimension(400, 566);
 
@@ -34,7 +32,7 @@ public abstract class GameFrame extends JFrame {
 	static final int nKEY_LEFT = KeyEvent.VK_LEFT;
 	static final int nKEY_RIGHT = KeyEvent.VK_RIGHT;
 	static final int BALL_N = 10;
-	static final int MAX_POINT = 100;
+	static final int MAX_POINT = 100; // Goal Point
 
 	public static final Font font = new Font("Sans-Serif", Font.PLAIN, 20);
 	public static final Font font2 = new Font("Sans-Serif", Font.BOLD, 80);
@@ -42,22 +40,26 @@ public abstract class GameFrame extends JFrame {
 	protected PongController pongController;
 	protected Graphics g;
 
-	protected Ball[] ball; // Rectangle型のサブクラス
-	protected Bar bar; // Rectangle型のサブクラス
-	protected boolean left, right, kz, kx;
-	int mypoint;
-	int point[]; // your point: point[id - 1]
-	int id; // server: 1, client: 2 ~ n
-	int winorlose = 0; // 0: yet, 1; win, 2: lose
+	protected Ball[] ball; // Subclass of Rectangle
+	protected Bar bar; // Subclass of Rectangle
+	protected boolean left, right;
+	protected int[] point; // your point: point[id - 1]
+	protected int id; // server: 1, client: 2 ~ number
+	protected int winorlose = 0; // 0: yet, 1; win, 2: lose
 
 	// count: ボールがbarとぶつかった回数
-	int count = 0, j;
-	Color[] bColor = {new Color(255, 255, 255, 100), Color.red, Color.blue};
-	int bcolori = 0; // 0: white, 1: red, 2: blue
+	protected int count = 0, j;
+	// bColor[]: background color
+	protected Color[] bColor = {new Color(255, 255, 255, 100), Color.red, Color.blue};
+	// bcolori: index of bColor[]
+	protected int bcolori = 0; // 0: white, 1: red, 2: blue
+
+	protected Clip hit; // サウンドクリップ
+	protected Clip bgm;
 
 	public GameFrame(int n, PongController npc) {
-		hit = getClip("hit.wav");
-		bgm = getClip("BGM.wav");
+		this.hit = getClip("hit.wav");
+		this.bgm = getClip("BGM.wav");
 
 		this.pongController = npc;
 
@@ -78,7 +80,6 @@ public abstract class GameFrame extends JFrame {
 		bar = new Bar(150, 461, 100, 10);
 
 		// Point
-		mypoint = 0;
 		point = new int[n];
 		for (int i = 0; i < point.length; i++) {
 			point[i] = 0;
@@ -114,6 +115,7 @@ public abstract class GameFrame extends JFrame {
 			}
 		});
 	}
+
 	public Clip getClip(String filename) {
 		Clip clip = null;
 		try {
@@ -128,6 +130,7 @@ public abstract class GameFrame extends JFrame {
 		}
 		return clip;
 	}
+
 	public void init() {
 		count = 0;
 		j = 1;
@@ -239,7 +242,6 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	protected boolean isFloor(Ball bl) {
-
 		return bl.next().intersects(FLOOR);
 	}
 
@@ -265,7 +267,6 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	protected boolean isReboundy(Ball bl) {
-		// boolean b = (bl.y + bl.height >= FRAME_SIZE.height - 1);
 		boolean b = false;
 		if (bl.next().intersects(bar.next()) && (bl.y + bl.height <= bar.y || bl.y >= bar.y + bar.height)) {
 			b = true;
