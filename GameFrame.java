@@ -56,6 +56,7 @@ public abstract class GameFrame extends JFrame {
 
 	protected Clip hit; // サウンドクリップ
 	protected Clip bgm;
+	protected Clip miss;
 
 	public GameFrame(int n, PongController npc) {
 		this.hit = getClip("hit.wav");
@@ -132,6 +133,7 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	public void init() {
+		this.miss = getClip("miss.wav");
 		count = 0;
 		j = 1;
 		bgm.setFramePosition(0);
@@ -155,6 +157,9 @@ public abstract class GameFrame extends JFrame {
 							} else if (isFloor(ball[i])) {
 								ball[i].boundY();
 								point[id - 1] -= 5;
+								miss.stop();
+								miss.setFramePosition(0); // miss再生
+								miss.start();
 								sendPoint(id, point[id - 1]);
 								bcolori = 2;
 							} else {
