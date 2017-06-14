@@ -183,14 +183,6 @@ public class PongServer extends PongController implements Runnable {
 		pongSender[i].send(s);
 	}
 
-	public synchronized void terminateConnection(int i) {
-		this.closeSocketStream(i);
-
-		if (this.sConnector != null) {
-			this.sConnector.transNumberOfSocket(-1);
-		}
-	}
-
 	// PongReceiverで受信した文字列に対する処理
 	public synchronized void receive(String s, int i) {
 		if (this.isStartFrame) {
@@ -205,6 +197,14 @@ public class PongServer extends PongController implements Runnable {
 			} else if (s.startsWith("Point: ")) {
 				this.gFrame.receivePoint(s);
 			}
+		}
+	}
+
+	public synchronized void terminateConnection(int i) {
+		this.closeSocketStream(i);
+
+		if (this.sConnector != null) {
+			this.sConnector.transNumberOfSocket(-1);
 		}
 	}
 

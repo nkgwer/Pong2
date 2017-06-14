@@ -123,12 +123,24 @@ public class PongClient extends PongController implements Runnable {
 				System.err.println("Failed to change to integer.");
 			}
 		}
-		try {
-			this.socket = new Socket(addr, portNumber);
-		} catch (IOException ioe) {
+		int c = 0;
+		while (this.socket == null && c < 100) {
+			try {
+				this.socket = new Socket(addr, portNumber);
+				break;
+			} catch (IOException ioe) {
+				this.socket = null;
+				c++;
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ire) {
+					// Do Nothing.
+				}
+			}
+		}
+		if (c >= 100 || this.socket == null) {
 			String msg = "Failed to connect.";
 			System.err.println(msg);
-			this.socket = null;
 			return;
 		}
 		System.out.println("socket = " + this.socket);
