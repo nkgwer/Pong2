@@ -34,7 +34,7 @@ public final class GameFrameS extends GameFrame implements ActionListener {
 
 		// ボールの 左上角の座標, 幅, 高さ, 速度の設定
 		ball[0] = new Ball(185, 1, 30, 30);
-		ball[0].setV(new Dimension((int) Math.ceil(3 * Math.random() - 1), 1));
+		ball[0].setV(new Dimension((int) Math.ceil(3 * Math.random() - 1), 2));
 		ball[0].setVisible(false);
 
 		// 最初はボールがある。
@@ -56,7 +56,7 @@ public final class GameFrameS extends GameFrame implements ActionListener {
 			int r = rnd.nextInt(155) + 50;
 			int g = rnd.nextInt(155) + 50;
 			int b = rnd.nextInt(155) + 50;
-			this.pongController.sendBall(i, new Ball("Ball: 185 1 30 30 " + vx + " 1" + " " + r + " " + g + " " + b));
+			this.pongController.sendBall(i, new Ball("Ball: 185 1 30 30 " + vx + " 2" + " " + r + " " + g + " " + b));
 		}
 		super.init();
 	}

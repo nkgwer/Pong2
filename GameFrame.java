@@ -7,11 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
 import javax.swing.JFrame;
 import javax.swing.Timer;
-import javax.sound.sampled.*;
-import java.io.*;
-
 
 // ゲーム画面用クラス
 public abstract class GameFrame extends JFrame {
@@ -29,9 +31,10 @@ public abstract class GameFrame extends JFrame {
 	        3 * FRAME_SIZE.height);
 
 	static final int BAR_V = 2; // barV: バーの横移動の速さ
+	static final int BALL_MAX_V = 8; // BALL_MAX_V: Max speed of ball
 	static final int nKEY_LEFT = KeyEvent.VK_LEFT;
 	static final int nKEY_RIGHT = KeyEvent.VK_RIGHT;
-	static final int BALL_N = 10;
+	static final int BALL_N = 10; // BALL_N: ボールの最大個数
 	static final int MAX_POINT = 100; // Goal Point
 
 	public static final Font font = new Font("Sans-Serif", Font.PLAIN, 20);
@@ -48,7 +51,7 @@ public abstract class GameFrame extends JFrame {
 	protected int winorlose = 0; // 0: yet, 1; win, 2: lose
 
 	// count: ボールがbarとぶつかった回数
-	protected int count = 0, j;
+	protected int count = 0;
 	// bColor[]: background color
 	protected Color[] bColor = {new Color(255, 255, 255, 100), Color.red, Color.blue};
 	// bcolori: index of bColor[]
@@ -63,7 +66,6 @@ public abstract class GameFrame extends JFrame {
 		this.bgm = getClip("BGM.wav");
 
 		this.pongController = npc;
-
 		this.setTitle(TITLE_STRING); // タイトルの設定
 		this.setSize(FRAME_SIZE); // サイズの設定
 		this.setResizable(false); // サイズを固定
@@ -75,23 +77,15 @@ public abstract class GameFrame extends JFrame {
 		}
 		this.setBackground(Color.WHITE); // 背景は白
 
-		ball = new Ball[BALL_N];
-
-		// Bar
-		bar = new Bar(150, 461, 100, 10);
-
-		// Point
-		point = new int[n];
-		for (int i = 0; i < point.length; i++) {
-			point[i] = 0;
-		}
-
+		ball = new Ball[BALL_N]; // Balls
+		bar = new Bar(150, 461, 100, 10); // Bar
+		point = new int[n]; // Points
+		for (int i = 0; i < point.length; i++) point[i] = 0;
 		try {
 			g = getGraphics();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
@@ -103,7 +97,6 @@ public abstract class GameFrame extends JFrame {
 					break;
 				}
 			}
-
 			public void keyReleased(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case nKEY_LEFT:
@@ -135,19 +128,19 @@ public abstract class GameFrame extends JFrame {
 	public void init() {
 		this.miss = getClip("miss.wav");
 		count = 0;
-		j = 1;
 		bgm.setFramePosition(0);
 		bgm.loop(Clip.LOOP_CONTINUOUSLY);
 		new Timer(10, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// barの動く方向の設定
-				bar.setVX(0);
 				if (winorlose == 0) {
+					// barの動く方向の設定
+					bar.setVX(0);
 					if (left && !right && bar.getX() >= 0)
 						bar.setVX(-BAR_V);
 					else if (right && !left && bar.getX() <= 300)
 						bar.setVX(BAR_V);
 
+					// 各ballの速度の設定
 					for (int i = 0; i < ball.length; i++) {
 						if (ball[i] != null) {
 							if (isCeiling(ball[i])) {
@@ -163,46 +156,51 @@ public abstract class GameFrame extends JFrame {
 								sendPoint(id, point[id - 1]);
 								bcolori = 2;
 							} else {
-								if (isReboundLeft(ball[i]))
-									ball[i].setVX(Math.abs(ball[i].getVX()));
-								if (isReboundRight(ball[i]))
-									ball[i].setVX(-Math.abs(ball[i].getVX()));
-								if (isReboundx(ball[i]))
+								if (isReboundLeft(ball[i])) {
 									ball[i].boundX();
+									ball[i].setVX(Math.abs(ball[i].getVX()));
+								} else if (isReboundRight(ball[i])) {
+									ball[i].boundX();
+									ball[i].setVX(-Math.abs(ball[i].getVX()));
+								}
 								if (isReboundy(ball[i]) && ball[i].getVY() > 0) {
+									ball[i].setVX(ball[i].getVX() + bar.getVX());
 									ball[i].boundY();
 									point[id - 1] += 10;
 									sendPoint(id, point[id - 1]);
 									bcolori = 1;
+									hit.stop();
+									hit.setFramePosition(0); // 巻き戻し
+									hit.start();
+									count++;
+									// 40%の確率で縦の速さが1段階速くなる
+									if (Math.random() < 0.4 && Math.abs(ball[i].getVY()) < BALL_MAX_V)
+										ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
+								} else if (isReboundx(ball[i])) {
+									ball[i].setVX(- ball[i].getVX() + 2 * bar.getVX());
+									point[id - 1] += 5;
+									sendPoint(id, point[id - 1]);
+									bcolori = 1;
+									hit.stop();
+									hit.setFramePosition(0); // 巻き戻し
+									hit.start();
+									count++;
 								}
 								for (int j = i + 1; j < ball.length; j++) {
 									if (ball[j] != null)
-										if (isCollide(ball[i], ball[j])) {
-											collide(ball[i], ball[j]);
-										}
+										if (isCollide(ball[i], ball[j])) collide(ball[i], ball[j]);
 								}
-								// バーに5回当たると縦の速さが1段階速くなる
-								if (count >= 5 * j && Math.abs(ball[i].getVY()) < 8) {
-									ball[i].setVY((int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
-									j++;
-								}
-								if (ball[i].getVX() > 8)
-									ball[i].setVX(8);
-								if (ball[i].getVX() < -8)
-									ball[i].setVX(-8);
-								if (ball[i].getVY() > 8)
-									ball[i].setVY(8);
-								if (ball[i].getVY() < -8)
-									ball[i].setVY(-8);
-								if (ball[i].getVY() == 0)
-									ball[i].setVY(1);
+								if (ball[i].getVX() > BALL_MAX_V) ball[i].setVX(BALL_MAX_V);
+								else if (ball[i].getVX() < -BALL_MAX_V) ball[i].setVX(-BALL_MAX_V);
+								if (ball[i].getVY() > BALL_MAX_V) ball[i].setVY(BALL_MAX_V);
+								else if (ball[i].getVY() < -BALL_MAX_V) ball[i].setVY(-BALL_MAX_V);
+								if (ball[i].getVY() == 0) ball[i].setVY(1);
 								ball[i].translate();
 							}
 						}
-
 					}
-					if (isMax() && winorlose == 0) terminateGame();
 					bar.translate();
+					if (isMax() && winorlose == 0) terminateGame();
 				}
 				repaint();
 			}
@@ -214,7 +212,6 @@ public abstract class GameFrame extends JFrame {
 		g.setColor(bColor[bcolori]);
 		g.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 		bcolori = 0;
-
 		// g.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
 		for (int i = 0; i < ball.length; i++) {
@@ -259,29 +256,11 @@ public abstract class GameFrame extends JFrame {
 	}
 
 	protected boolean isReboundx(Ball bl) {
-		boolean b = false;
-		if (bl.next().intersects(bar.next()) && (bl.x + bl.width <= bar.x || bl.x >= bar.x + bar.width)) {
-			b = true;
-			bl.setVX(bl.getVX() - bar.getVX());
-			hit.stop();
-			hit.setFramePosition(0); // 巻き戻し
-			hit.start();
-			count++;
-		}
-		return b;
+		return (bl.next().intersects(bar.next()) && (bl.x + bl.width <= bar.x || bl.x >= bar.x + bar.width));
 	}
 
 	protected boolean isReboundy(Ball bl) {
-		boolean b = false;
-		if (bl.next().intersects(bar.next()) && (bl.y + bl.height <= bar.y || bl.y >= bar.y + bar.height)) {
-			b = true;
-			bl.setVX(bl.getVX() + (int) Math.signum(bar.getVX()));
-			hit.stop();
-			hit.setFramePosition(0); // 巻き戻し
-			hit.start();
-			count++;
-		}
-		return b;
+		return (bl.next().intersects(bar.next()) && (bl.y + bl.height <= bar.y || bl.y >= bar.y + bar.height));
 	}
 
 	protected boolean isCollide(Ball bl1, Ball bl2) {
