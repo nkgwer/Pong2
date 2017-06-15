@@ -43,22 +43,10 @@ public class PongClient extends PongController implements Runnable {
 		}
 
 		while (this.isGameFrame) {
-			// ボールが自分のフィールドに来るまで待つ。
-			while (this.gFrame.ball[0] != null) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException ire) {
-					// Do Nothing.
-				}
-			}
-
-			// ボールが自分のフィールドから出ない間待つ。
-			while (this.gFrame.ball[0] == null) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException ire) {
-					// Do Nothing.
-				}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException ire) {
+				// Do Nothing.
 			}
 		}
 
