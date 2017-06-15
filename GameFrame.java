@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -202,41 +203,44 @@ public abstract class GameFrame extends JFrame {
 					bar.translate();
 					if (isMax() && winorlose == 0) terminateGame();
 				}
-				repaint();
+				repaint(2);
 			}
 		}).start();
 	}
 
 	public synchronized void paint(Graphics g) {
 		// 描画
-		g.setColor(bColor[bcolori]);
-		g.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
+		Image image = createImage(FRAME_SIZE.width, FRAME_SIZE.height);
+		Graphics dg = image.getGraphics();
+		dg.setColor(bColor[bcolori]);
+		dg.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 		bcolori = 0;
 		// g.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
 		for (int i = 0; i < ball.length; i++) {
 			if (ball[i] != null) {
-				g.setColor(new Color(ball[i].getR(), ball[i].getG(), ball[i].getB()));
-				g.fillOval(ball[i].x, ball[i].y, ball[i].width, ball[i].height);
+				dg.setColor(new Color(ball[i].getR(), ball[i].getG(), ball[i].getB()));
+				dg.fillOval(ball[i].x, ball[i].y, ball[i].width, ball[i].height);
 			}
 		}
-		g.setColor(Color.BLACK);
-		g.fillRect(bar.x, bar.y, bar.width, bar.height);
+		dg.setColor(Color.BLACK);
+		dg.fillRect(bar.x, bar.y, bar.width, bar.height);
 
 		// ポイント表示
-		g.setFont(font);
+		dg.setFont(font);
 		for (int i = 0; i < point.length; i++) {
-			g.drawString("Player " + (i + 1) + ": " + point[i], 30 + 210 * (i % 2), 50 + 30 * (i / 2));
+			dg.drawString("Player " + (i + 1) + ": " + point[i], 30 + 210 * (i % 2), 50 + 30 * (i / 2));
 		}
 		if (winorlose == 1) {
-			g.setFont(font2);
-			g.setColor(Color.red);
-			g.drawString("WIN!", 110, 250);
+			dg.setFont(font2);
+			dg.setColor(Color.red);
+			dg.drawString("WIN!", 110, 250);
 		} else if (winorlose == 2) {
-			g.setFont(font2);
-			g.setColor(Color.blue);
-			g.drawString("LOSE...", 80, 250);
+			dg.setFont(font2);
+			dg.setColor(Color.blue);
+			dg.drawString("LOSE...", 80, 250);
 		}
+		g.drawImage(image, 0, 0, this);
 	}
 
 	protected boolean isCeiling(Ball bl) {
