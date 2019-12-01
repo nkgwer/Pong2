@@ -141,11 +141,11 @@ public abstract class GameFrame extends JFrame {
       public void actionPerformed(ActionEvent e) {
         if (winorlose == 0) {
           // barの動く方向の設定
-          bar.setVX(0);
+          bar.setVelocityX(0);
           if (left && !right && bar.getX() >= 0)
-            bar.setVX(-BAR_V);
+            bar.setVelocityX(-BAR_V);
           else if (right && !left && bar.getX() <= 300)
-            bar.setVX(BAR_V);
+            bar.setVelocityX(BAR_V);
 
           // 各ballの速度の設定
           for (int i = 0; i < ball.length; i++) {
@@ -171,7 +171,7 @@ public abstract class GameFrame extends JFrame {
                   ball[i].setVX(-Math.abs(ball[i].getVelocityX()));
                 }
                 if (isReboundy(ball[i]) && ball[i].getVelocityY() > 0) {
-                  ball[i].setVX(ball[i].getVelocityX() + bar.getVX());
+                  ball[i].setVX(ball[i].getVelocityX() + bar.getVelocityX());
                   ball[i].boundY();
                   point[id - 1] += 10;
                   sendPoint(id, point[id - 1]);
@@ -185,7 +185,7 @@ public abstract class GameFrame extends JFrame {
                     ball[i].setVY(
                             (int) Math.signum(ball[i].getVelocityY()) * (Math.abs(ball[i].getVelocityY()) + 1));
                 } else if (isReboundx(ball[i])) {
-                  ball[i].setVX(-ball[i].getVelocityX() + 2 * bar.getVX());
+                  ball[i].setVX(-ball[i].getVelocityX() + 2 * bar.getVelocityX());
                   point[id - 1] += 5;
                   sendPoint(id, point[id - 1]);
                   bcolori = 1;
