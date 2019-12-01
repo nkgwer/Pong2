@@ -1,3 +1,5 @@
+package com.o-char.pong;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.util.StringTokenizer;

@@ -1,3 +1,5 @@
+package com.o-char.pong;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;

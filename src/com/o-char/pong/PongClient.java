@@ -1,3 +1,5 @@
+package com.o-char.pong;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;

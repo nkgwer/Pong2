@@ -1,3 +1,5 @@
+package com.o-char.pong;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 

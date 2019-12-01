@@ -1,3 +1,5 @@
+package com.o-char.pong;
+
 public abstract class PongController {
 	String userName;
 	Integer number; // number of player

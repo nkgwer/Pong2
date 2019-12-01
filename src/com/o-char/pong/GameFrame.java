@@ -1,3 +1,4 @@
+package com.o-char.pong;
 
 import java.awt.Color;
 import java.awt.Dimension;
