@@ -1,7 +1,6 @@
 package com.o_char.pong;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,8 +11,6 @@ import javax.swing.JPanel;
 
 // PongServer向けゲーム画面用クラス
 public final class GameFrameS extends GameFrame implements ActionListener {
-  private Container cont;
-  private JPanel p;
   JButton btn;
 
   public GameFrameS(int n, PongController npc) {
@@ -25,29 +22,28 @@ public final class GameFrameS extends GameFrame implements ActionListener {
     btn.addActionListener(this);
 
     // スタートボタンが乗るパネル
-    p = new JPanel();
-    p.setLayout(null);
-    p.add(btn);
-    btn.setBounds(110, 200, 180, 120);
+    JPanel panel = new JPanel();
+    panel.setLayout(null);
+    panel.add(this.btn);
+    this.btn.setBounds(110, 200, 180, 120);
 
-    // コンテントペイン
-    cont = getContentPane();
-    cont.add(p, BorderLayout.CENTER);
+    // コンテントペイン.
+    this.getContentPane().add(panel, BorderLayout.CENTER);
 
     // ボールの 左上角の座標, 幅, 高さ, 速度の設定
-    ball[0] = new Ball(185, 1, 30, 30);
-    ball[0].setVelocity(new Dimension((int) Math.ceil(3 * Math.random() - 1), 2));
-    ball[0].setVisible(false);
+    this.ball[0] = new Ball(185, 1, 30, 30);
+    this.ball[0].setVelocity(new Dimension((int) Math.ceil(3 * Math.random() - 1), 2));
+    this.ball[0].setVisible(false);
 
     // 最初はボールがある。
-    ball[0].setVisible(true);
+    this.ball[0].setVisible(true);
 
-    id = 1;
+    this.id = 1;
   }
 
   public void actionPerformed(ActionEvent e) {
-    btn.setEnabled(false);
-    btn.setVisible(false);
+    this.btn.setEnabled(false);
+    this.btn.setVisible(false);
     init();
   }
 
