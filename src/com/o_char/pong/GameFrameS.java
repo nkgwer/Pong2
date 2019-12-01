@@ -76,11 +76,17 @@ public final class GameFrameS extends GameFrame implements ActionListener {
 
   public synchronized void terminateGame() {
     for (int i = 1; i < point.length; i++) {
-      if (point[i] >= MAX_POINT) this.pongController.sendIsWin(i - 1, "Win");
-      else this.pongController.sendIsWin(i - 1, "Lose");
+      if (point[i] >= MAX_POINT) {
+        this.pongController.sendIsWin(i - 1, "Win");
+      } else {
+        this.pongController.sendIsWin(i - 1, "Lose");
+      }
     }
-    if (point[0] >= MAX_POINT) win();
-    else lose();
+    if (point[0] >= MAX_POINT) {
+      this.win();
+    } else {
+      this.lose();
+    }
     for (int i = 0; i < this.pongController.number - 1; i++) {
       this.pongController.terminateConnection(i);
     }
