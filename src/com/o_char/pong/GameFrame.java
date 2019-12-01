@@ -165,13 +165,13 @@ public abstract class GameFrame extends JFrame {
               } else {
                 if (isReboundLeft(ball[i])) {
                   ball[i].boundX();
-                  ball[i].setVX(Math.abs(ball[i].getVX()));
+                  ball[i].setVX(Math.abs(ball[i].getVelocityX()));
                 } else if (isReboundRight(ball[i])) {
                   ball[i].boundX();
-                  ball[i].setVX(-Math.abs(ball[i].getVX()));
+                  ball[i].setVX(-Math.abs(ball[i].getVelocityX()));
                 }
-                if (isReboundy(ball[i]) && ball[i].getVY() > 0) {
-                  ball[i].setVX(ball[i].getVX() + bar.getVX());
+                if (isReboundy(ball[i]) && ball[i].getVelocityY() > 0) {
+                  ball[i].setVX(ball[i].getVelocityX() + bar.getVX());
                   ball[i].boundY();
                   point[id - 1] += 10;
                   sendPoint(id, point[id - 1]);
@@ -181,11 +181,11 @@ public abstract class GameFrame extends JFrame {
                   hit.start();
                   count++;
                   // 40%の確率で縦の速さが1段階速くなる
-                  if (Math.random() < 0.4 && Math.abs(ball[i].getVY()) < BALL_MAX_V)
+                  if (Math.random() < 0.4 && Math.abs(ball[i].getVelocityY()) < BALL_MAX_V)
                     ball[i].setVY(
-                            (int) Math.signum(ball[i].getVY()) * (Math.abs(ball[i].getVY()) + 1));
+                            (int) Math.signum(ball[i].getVelocityY()) * (Math.abs(ball[i].getVelocityY()) + 1));
                 } else if (isReboundx(ball[i])) {
-                  ball[i].setVX(-ball[i].getVX() + 2 * bar.getVX());
+                  ball[i].setVX(-ball[i].getVelocityX() + 2 * bar.getVX());
                   point[id - 1] += 5;
                   sendPoint(id, point[id - 1]);
                   bcolori = 1;
@@ -199,15 +199,15 @@ public abstract class GameFrame extends JFrame {
                     if (isCollide(ball[i], ball[j]))
                       collide(ball[i], ball[j]);
                 }
-                if (ball[i].getVX() > BALL_MAX_V)
+                if (ball[i].getVelocityX() > BALL_MAX_V)
                   ball[i].setVX(BALL_MAX_V);
-                else if (ball[i].getVX() < -BALL_MAX_V)
+                else if (ball[i].getVelocityX() < -BALL_MAX_V)
                   ball[i].setVX(-BALL_MAX_V);
-                if (ball[i].getVY() > BALL_MAX_V)
+                if (ball[i].getVelocityY() > BALL_MAX_V)
                   ball[i].setVY(BALL_MAX_V);
-                else if (ball[i].getVY() < -BALL_MAX_V)
+                else if (ball[i].getVelocityY() < -BALL_MAX_V)
                   ball[i].setVY(-BALL_MAX_V);
-                if (ball[i].getVY() == 0)
+                if (ball[i].getVelocityY() == 0)
                   ball[i].setVY(1);
                 ball[i].translate();
               }
@@ -296,7 +296,7 @@ public abstract class GameFrame extends JFrame {
     }
     this.ball[i] = new Ball(s);
     this.ball[i].setLocation(this.FRAME_SIZE.width - this.ball[i].width - this.ball[i].x, 1);
-    this.ball[i].setV(-this.ball[i].getVX(), (int) Math.abs(this.ball[i].getVY()));
+    this.ball[i].setVelocity(-this.ball[i].getVelocityX(), (int) Math.abs(this.ball[i].getVelocityY()));
     this.ball[i].setVisible(true);
   }
 
@@ -307,14 +307,14 @@ public abstract class GameFrame extends JFrame {
   protected void collide(Ball bl1, Ball bl2) {
     Dimension v1, v2, nv1, nv2;
     final double e = 1; // 反発係数
-    v1 = bl1.getV();
-    v2 = bl2.getV();
+    v1 = bl1.getVelocity();
+    v2 = bl2.getVelocity();
     nv1 = new Dimension((int) Math.floor(((1 - e) * v1.width + (1 + e) * v2.width) / 2),
             (int) Math.floor(((1 - e) * v1.height + (1 + e) * v2.height) / 2));
     nv2 = new Dimension((int) Math.floor(((1 + e) * v1.width + (1 - e) * v2.width) / 2),
             (int) Math.floor(((1 + e) * v1.height + (1 - e) * v2.height) / 2));
-    bl1.setV(nv1);
-    bl2.setV(nv2);
+    bl1.setVelocity(nv1);
+    bl2.setVelocity(nv2);
     hit.stop();
     hit.setFramePosition(0); // 巻き戻し
     hit.start();

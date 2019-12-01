@@ -7,21 +7,41 @@ import java.util.StringTokenizer;
 
 // ボール
 public class Ball extends Rectangle {
-  private Dimension v;
+  /**
+   * 速度.
+   */
+  private Dimension velocity;
   private boolean isVisible;
   private int r;
   private int g;
   private int b;
 
+  /**
+   * Constructs a new <code>Rectangle</code> whose upper-left corner is
+   * specified as
+   * {@code (x,y)} and whose width and height
+   * are specified by the arguments of the same name.
+   *
+   * @param nx      the specified X coordinate
+   * @param ny      the specified Y coordinate
+   * @param nwidth  the width of the <code>Rectangle</code>
+   * @param nheight the height of the <code>Rectangle</code>
+   * @since 1.0
+   */
   public Ball(int nx, int ny, int nwidth, int nheight) {
     super(nx, ny, nwidth, nheight);
-    this.v = new Dimension(0, 0);
+    this.velocity = new Dimension(0, 0);
     Random rnd = new Random();
     this.r = rnd.nextInt(155) + 50;
     this.g = rnd.nextInt(155) + 50;
     this.b = rnd.nextInt(155) + 50;
   }
 
+  /**
+   * Constructor.
+   *
+   * @param s ボールの情報が入っている文字列.
+   */
   public Ball(String s) {
     StringTokenizer st = new StringTokenizer(s, " ");
     st.nextToken();
@@ -32,44 +52,44 @@ public class Ball extends Rectangle {
     int nvwidth = Integer.parseInt(st.nextToken());
     int nvheight = Integer.parseInt(st.nextToken());
     this.setRect(nx, ny, nwidth, nheight);
-    this.v = new Dimension(nvwidth, nvheight);
+    this.velocity = new Dimension(nvwidth, nvheight);
     this.r = Integer.parseInt(st.nextToken());
     this.g = Integer.parseInt(st.nextToken());
     this.b = Integer.parseInt(st.nextToken());
   }
 
-  public void setV(Dimension nv) {
-    v.width = nv.width;
-    v.height = nv.height;
+  public void setVelocity(Dimension nv) {
+    velocity.width = nv.width;
+    velocity.height = nv.height;
   }
 
-  public void setV(int nwidth, int nheight) {
-    v.width = nwidth;
-    v.height = nheight;
+  public void setVelocity(int nwidth, int nheight) {
+    velocity.width = nwidth;
+    velocity.height = nheight;
   }
 
   public void setVX(int nwidth) {
-    v.width = nwidth;
+    velocity.width = nwidth;
   }
 
   public void setVY(int nheight) {
-    v.height = nheight;
+    velocity.height = nheight;
   }
 
   public void setVisible(boolean b) {
     this.isVisible = b;
   }
 
-  public Dimension getV() {
-    return v;
+  public Dimension getVelocity() {
+    return velocity;
   }
 
-  public int getVX() {
-    return v.width;
+  public int getVelocityX() {
+    return velocity.width;
   }
 
-  public int getVY() {
-    return v.height;
+  public int getVelocityY() {
+    return velocity.height;
   }
 
   public int getR() {
@@ -89,24 +109,26 @@ public class Ball extends Rectangle {
   }
 
   public void translate() {
-    translate(v.width, v.height);
+    translate(velocity.width, velocity.height);
   }
 
-  // 次の時間でのボールの位置
+  /**
+   * 次の時間でのボールの位置.
+   */
   public Ball next() {
-    return new Ball(x + v.width, y + v.height, width, height);
+    return new Ball(x + velocity.width, y + velocity.height, width, height);
   }
 
   public void boundX() {
-    v.width = -v.width;
+    velocity.width = -velocity.width;
   }
 
   public void boundY() {
-    v.height = -v.height;
+    velocity.height = -velocity.height;
   }
 
   public String toString() {
-    return "Ball: " + this.x + " " + this.y + " " + this.width + " " + this.height + " " + this.v.width + " "
-            + this.v.height + " " + this.r + " " + this.g + " " + this.b;
+    return "Ball: " + this.x + " " + this.y + " " + this.width + " " + this.height + " " + this.velocity.width + " "
+            + this.velocity.height + " " + this.r + " " + this.g + " " + this.b;
   }
 }
