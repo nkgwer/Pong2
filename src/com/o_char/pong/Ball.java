@@ -1,7 +1,6 @@
 package com.o_char.pong;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -12,9 +11,7 @@ public class Ball extends Rectangle {
    */
   private Dimension velocity;
   private boolean isVisible;
-  private int r;
-  private int g;
-  private int b;
+  private Color color;
 
   /**
    * Constructs a new <code>Rectangle</code> whose upper-left corner is
@@ -32,9 +29,9 @@ public class Ball extends Rectangle {
     super(nx, ny, nwidth, nheight);
     this.velocity = new Dimension(0, 0);
     Random rnd = new Random();
-    this.r = rnd.nextInt(155) + 50;
-    this.g = rnd.nextInt(155) + 50;
-    this.b = rnd.nextInt(155) + 50;
+    this.color = new Color(rnd.nextInt(155) + 50,
+            rnd.nextInt(155) + 50,
+            rnd.nextInt(155) + 50);
   }
 
   /**
@@ -53,9 +50,9 @@ public class Ball extends Rectangle {
     int nvheight = Integer.parseInt(st.nextToken());
     this.setRect(nx, ny, nwidth, nheight);
     this.velocity = new Dimension(nvwidth, nvheight);
-    this.r = Integer.parseInt(st.nextToken());
-    this.g = Integer.parseInt(st.nextToken());
-    this.b = Integer.parseInt(st.nextToken());
+    this.color = new Color(Integer.parseInt(st.nextToken()),
+            Integer.parseInt(st.nextToken()),
+            Integer.parseInt(st.nextToken()));
   }
 
   public void setVelocity(Dimension nv) {
@@ -93,15 +90,15 @@ public class Ball extends Rectangle {
   }
 
   public int getR() {
-    return this.r;
+    return this.color.getRed();
   }
 
   public int getG() {
-    return this.g;
+    return this.color.getGreen();
   }
 
   public int getB() {
-    return this.b;
+    return this.color.getBlue();
   }
 
   public boolean getVisible() {
@@ -128,7 +125,8 @@ public class Ball extends Rectangle {
   }
 
   public String toString() {
+    Color color = this.color;
     return "Ball: " + this.x + " " + this.y + " " + this.width + " " + this.height + " " + this.velocity.width + " "
-            + this.velocity.height + " " + this.r + " " + this.g + " " + this.b;
+            + this.velocity.height + " " + color.getRed() + " " + color.getGreen() + " " + color.getBlue();
   }
 }
