@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -18,7 +19,9 @@ import javax.sound.sampled.Line;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-// ゲーム画面用クラス
+/**
+ * ゲーム画面用抽象クラス.
+ */
 public abstract class GameFrame extends JFrame {
   static final String TITLE_STRING = "Pong!";
   static final Dimension FRAME_SIZE = new Dimension(400, 566);
@@ -49,9 +52,16 @@ public abstract class GameFrame extends JFrame {
 
   protected Ball[] ball; // Subclass of Rectangle
   protected Bar bar; // Subclass of Rectangle
-  protected boolean left, right;
-  protected int[] point; // your point: point[id - 1]
-  protected int id; // server: 1, client: 2 ~ number
+  protected boolean left;
+  protected boolean right;
+  /**
+   * 各ユーザの得点. 自分の得点は point[id - 1] である.
+   */
+  protected int[] point;
+  /**
+   * ユーザID. サーバには 1, クライアントには 2以降の値が割り当てられる.
+   */
+  protected int id;
   protected int winorlose = 0; // 0: yet, 1; win, 2: lose
 
   // count: ボールがbarとぶつかった回数
@@ -61,14 +71,22 @@ public abstract class GameFrame extends JFrame {
   // bcolori: index of bColor[]
   protected int bcolori = 0; // 0: white, 1: red, 2: blue
 
-  protected Clip hit; // サウンドクリップ
+  /**
+   * サウンドクリップ.
+   */
+  protected Clip hit;
   protected Clip bgm;
   protected Clip miss;
 
+  /**
+   * Constructor.
+   *
+   * @param n   参加人数.
+   * @param npc 設定する PongController.
+   */
   public GameFrame(int n, PongController npc) {
     this.hit = getClip("hit.wav");
     this.bgm = getClip("BGM.wav");
-
     this.pongController = npc;
     this.setTitle(TITLE_STRING); // タイトルの設定
     this.setSize(FRAME_SIZE); // サイズの設定
@@ -84,8 +102,8 @@ public abstract class GameFrame extends JFrame {
     ball = new Ball[BALL_N]; // Balls
     bar = new Bar(150, 461, 100, 10); // Bar
     point = new int[n]; // Points
-    for (int i = 0; i < point.length; i++)
-      point[i] = 0;
+    // 得点を 0点にセットする.
+    Arrays.fill(point, 0);
     try {
       g = getGraphics();
     } catch (Exception e) {
@@ -142,10 +160,11 @@ public abstract class GameFrame extends JFrame {
         if (winorlose == 0) {
           // barの動く方向の設定
           bar.setVelocityX(0);
-          if (left && !right && bar.getX() >= 0)
+          if (left && !right && bar.getX() >= 0) {
             bar.setVelocityX(-BAR_V);
-          else if (right && !left && bar.getX() <= 300)
+          } else if (right && !left && bar.getX() <= 300) {
             bar.setVelocityX(BAR_V);
+          }
 
           // 各ballの速度の設定
           for (int i = 0; i < ball.length; i++) {
@@ -181,9 +200,10 @@ public abstract class GameFrame extends JFrame {
                   hit.start();
                   count++;
                   // 40%の確率で縦の速さが1段階速くなる
-                  if (Math.random() < 0.4 && Math.abs(ball[i].getVelocityY()) < BALL_MAX_V)
+                  if (Math.random() < 0.4 && Math.abs(ball[i].getVelocityY()) < BALL_MAX_V) {
                     ball[i].setVY(
                             (int) Math.signum(ball[i].getVelocityY()) * (Math.abs(ball[i].getVelocityY()) + 1));
+                  }
                 } else if (isReboundx(ball[i])) {
                   ball[i].setVX(-ball[i].getVelocityX() + 2 * bar.getVelocityX());
                   point[id - 1] += 5;
@@ -195,27 +215,33 @@ public abstract class GameFrame extends JFrame {
                   count++;
                 }
                 for (int j = i + 1; j < ball.length; j++) {
-                  if (ball[j] != null)
-                    if (isCollide(ball[i], ball[j]))
+                  if (ball[j] != null) {
+                    if (isCollide(ball[i], ball[j])) {
                       collide(ball[i], ball[j]);
+                    }
+                  }
                 }
-                if (ball[i].getVelocityX() > BALL_MAX_V)
+                if (ball[i].getVelocityX() > BALL_MAX_V) {
                   ball[i].setVX(BALL_MAX_V);
-                else if (ball[i].getVelocityX() < -BALL_MAX_V)
+                } else if (ball[i].getVelocityX() < -BALL_MAX_V) {
                   ball[i].setVX(-BALL_MAX_V);
-                if (ball[i].getVelocityY() > BALL_MAX_V)
+                }
+                if (ball[i].getVelocityY() > BALL_MAX_V) {
                   ball[i].setVY(BALL_MAX_V);
-                else if (ball[i].getVelocityY() < -BALL_MAX_V)
+                } else if (ball[i].getVelocityY() < -BALL_MAX_V) {
                   ball[i].setVY(-BALL_MAX_V);
-                if (ball[i].getVelocityY() == 0)
+                }
+                if (ball[i].getVelocityY() == 0) {
                   ball[i].setVY(1);
+                }
                 ball[i].translate();
               }
             }
           }
           bar.translate();
-          if (isMax() && winorlose == 0)
+          if (isMax() && winorlose == 0) {
             terminateGame();
+          }
         }
         repaint(2);
       }
@@ -243,8 +269,9 @@ public abstract class GameFrame extends JFrame {
     // ポイント表示
     dg.setFont(font);
     for (int i = 0; i < point.length; i++) {
-      if (i + 1 == id)
+      if (i + 1 == id) {
         dg.setFont(font_bold);
+      }
       dg.drawString("Player " + (i + 1) + ": " + point[i], 30 + 210 * (i % 2), 50 + 30 * (i / 2));
       dg.setFont(font);
     }
@@ -305,10 +332,11 @@ public abstract class GameFrame extends JFrame {
   abstract void sendPoint(int id, int point);
 
   protected void collide(Ball bl1, Ball bl2) {
-    Dimension v1, v2, nv1, nv2;
+    Dimension nv1;
+    Dimension nv2;
     final double e = 1; // 反発係数
-    v1 = bl1.getVelocity();
-    v2 = bl2.getVelocity();
+    Dimension v1 = bl1.getVelocity();
+    Dimension v2 = bl2.getVelocity();
     nv1 = new Dimension((int) Math.floor(((1 - e) * v1.width + (1 + e) * v2.width) / 2),
             (int) Math.floor(((1 - e) * v1.height + (1 + e) * v2.height) / 2));
     nv2 = new Dimension((int) Math.floor(((1 + e) * v1.width + (1 - e) * v2.width) / 2),
@@ -326,8 +354,9 @@ public abstract class GameFrame extends JFrame {
 
   protected boolean isMax() {
     for (int i = 0; i < point.length; i++) {
-      if (point[i] >= MAX_POINT)
+      if (point[i] >= MAX_POINT) {
         return true;
+      }
     }
     return false;
   }
