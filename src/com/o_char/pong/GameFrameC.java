@@ -7,19 +7,19 @@ import javax.swing.JPanel;
 
 // PongClient向けゲーム画面用クラス
 public final class GameFrameC extends GameFrame {
-  private Container cont;
-  private JPanel p;
+  private Container container;
+  private JPanel panel;
 
   public GameFrameC(int n, int nid, PongController npc) {
     super(n, npc);
 
     // パネル
-    p = new JPanel();
-    p.setLayout(null);
+    this.panel = new JPanel();
+    this.panel.setLayout(null);
 
     // コンテントペイン
-    cont = this.getContentPane();
-    cont.add(p, BorderLayout.CENTER);
+    this.container = this.getContentPane();
+    this.container.add(this.panel, BorderLayout.CENTER);
 
     id = nid + 2;
 
@@ -30,8 +30,10 @@ public final class GameFrameC extends GameFrame {
     StringTokenizer st = new StringTokenizer(s, " ");
     st.nextToken();
     int nid = Integer.parseInt(st.nextToken());
-    int npoint = Integer.parseInt(st.nextToken());
-    if (nid != id) point[nid - 1] = npoint;
+    int newPoint = Integer.parseInt(st.nextToken());
+    if (nid != id) {
+      this.point[nid - 1] = newPoint;
+    }
   }
 
   public synchronized void sendPoint(int id, int point) {
