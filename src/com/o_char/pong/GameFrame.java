@@ -48,10 +48,18 @@ public abstract class GameFrame extends JFrame {
   public static final Font font2 = new Font("Sans-Serif", Font.BOLD, 80);
 
   protected PongController pongController;
-  protected Graphics g;
-
-  protected Ball[] ball; // Subclass of Rectangle
-  protected Bar bar; // Subclass of Rectangle
+  /**
+   * Graphics インスタンス.
+   */
+  protected Graphics graphics;
+  /**
+   * ボールの配列.
+   */
+  protected Ball[] ball;
+  /**
+   * バー.
+   */
+  protected Bar bar;
   protected boolean left;
   protected boolean right;
   /**
@@ -64,10 +72,14 @@ public abstract class GameFrame extends JFrame {
   protected int id;
   protected int winorlose = 0; // 0: yet, 1; win, 2: lose
 
-  // count: ボールがbarとぶつかった回数
+  /**
+   * ボールがバーとぶつかった累積回数.
+   */
   protected int count = 0;
-  // bColor[]: background color
-  protected Color[] bColor = {new Color(255, 255, 255, 100), Color.red, Color.blue};
+  /**
+   * 画面の背景色.
+   */
+  protected Color[] backgroundColor = {new Color(255, 255, 255, 100), Color.red, Color.blue};
   // bcolori: index of bColor[]
   protected int bcolori = 0; // 0: white, 1: red, 2: blue
 
@@ -105,7 +117,7 @@ public abstract class GameFrame extends JFrame {
     // 得点を 0点にセットする.
     Arrays.fill(point, 0);
     try {
-      g = getGraphics();
+      this.graphics = getGraphics();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -118,6 +130,7 @@ public abstract class GameFrame extends JFrame {
           case nKEY_RIGHT:
             right = true;
             break;
+          default:
         }
       }
 
@@ -129,6 +142,7 @@ public abstract class GameFrame extends JFrame {
           case nKEY_RIGHT:
             right = false;
             break;
+          default:
         }
       }
     });
@@ -252,7 +266,7 @@ public abstract class GameFrame extends JFrame {
     // 描画
     Image image = createImage(FRAME_SIZE.width, FRAME_SIZE.height);
     Graphics dg = image.getGraphics();
-    dg.setColor(bColor[bcolori]);
+    dg.setColor(backgroundColor[bcolori]);
     dg.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
     bcolori = 0;
     // g.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
