@@ -24,3 +24,5 @@ hs_err_pid*
 # for IntellJ IDEA
 .idea/**/workspace.xml
 .idea/**/tasks.xml
+
+bin/
