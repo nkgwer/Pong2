@@ -25,8 +25,11 @@ public class StartFrame extends JFrame implements ActionListener {
   static final Dimension BUTTON_SIZE = new Dimension(60, 30);
 
   Container container;
-  JLabel upperLabel, label1, label2;
-  final JTextField textField1, textField2;
+  JLabel upperLabel;
+  JLabel label1;
+  JLabel label2;
+  final JTextField textField1;
+  final JTextField textField2;
   final JTextArea log;
   final JScrollPane scrollpane;
   JButton btn;
@@ -38,6 +41,9 @@ public class StartFrame extends JFrame implements ActionListener {
   MenuItem[] menuItem;
   private final String[] menuItemString = {"Create Server", "Create Client"};
 
+  /**
+   * Constructor.
+   */
   public StartFrame() {
     this.setTitle(FRAME_TITLE); // Settting Title
     this.setSize(FRAME_SIZE); // サイズの設定
@@ -96,6 +102,11 @@ public class StartFrame extends JFrame implements ActionListener {
     this.container = this.getContentPane();
   }
 
+  /**
+   * ボタンが押された時の処理.
+   *
+   * @param e ボタン押下の ActionEvent.
+   */
   public void actionPerformed(ActionEvent e) {
     Object obj = e.getSource();
     if (obj == this.btn) {
@@ -116,7 +127,11 @@ public class StartFrame extends JFrame implements ActionListener {
     }
   }
 
-  // ログに文字列を表示する
+  /**
+   * ログに文字列を表示する.
+   *
+   * @param str 表示する文字列.
+   */
   public void logAppendln(String str) {
     System.out.println("ログに表示: " + str);
     this.log.append(str + "\n");

@@ -11,11 +11,18 @@ import javax.swing.JPanel;
 // PongServer向けスタート画面: 自分の名前と、対戦人数を指定する。
 public class StartFrameS extends StartFrame implements ActionListener {
   PongServer pongServer;
-  JPanel p1, p2, p3;
+  JPanel p1;
+  JPanel p2;
+  JPanel p3;
   JComboBox<String> textField2;
-  private final String[] COMBO_DATA = {"2", "3", "4", "5", "6", "7", "8"}; // コンボボックスの選択肢
+  private final String[] comboData = {"2", "3", "4", "5", "6", "7", "8"}; // コンボボックスの選択肢
   boolean isAccept; // 対戦相手を受付中
 
+  /**
+   * Constructor.
+   *
+   * @param nps 設定する PongServer.
+   */
   public StartFrameS(PongServer nps) {
     super();
     this.pongServer = nps;
@@ -28,7 +35,7 @@ public class StartFrameS extends StartFrame implements ActionListener {
     this.label2.setText("Number of Players:");
 
     // Setting combobox of number of players
-    this.textField2 = new JComboBox<String>(this.COMBO_DATA); // 自分も含めた対戦人数のコンボボックス
+    this.textField2 = new JComboBox<String>(this.comboData); // 自分も含めた対戦人数のコンボボックス
     this.textField2.setPreferredSize(this.LABEL_SIZE);
 
     // JPanel p3: setting 2 labels, a textfield and a combobox
@@ -61,7 +68,9 @@ public class StartFrameS extends StartFrame implements ActionListener {
     this.container.add(this.p1, BorderLayout.CENTER);
   }
 
-  // ボタンが押されたときの動作
+  /**
+   * ボタンが押されたときの動作.
+   */
   public void actionPerformed(ActionEvent e) {
     super.actionPerformed(e);
     Object obj = e.getSource();

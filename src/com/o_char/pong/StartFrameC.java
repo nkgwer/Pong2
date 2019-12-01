@@ -10,8 +10,15 @@ import javax.swing.JPanel;
 // PongClient向けスタート画面: 自分の名前とServer(親機)のホスト名/IPアドレスを指定する。
 public class StartFrameC extends StartFrame implements ActionListener {
   PongClient pongClient;
-  JPanel p1, p2, p3;
+  JPanel p1;
+  JPanel p2;
+  JPanel p3;
 
+  /**
+   * Constructor.
+   *
+   * @param npc 設定する PongClient.
+   */
   public StartFrameC(PongClient npc) {
     super();
     this.pongClient = npc;
@@ -53,10 +60,14 @@ public class StartFrameC extends StartFrame implements ActionListener {
     this.container.add(p1, BorderLayout.CENTER);
   }
 
+  /**
+   * ボタンが押されたときの動作.
+   */
   public void actionPerformed(ActionEvent e) {
     super.actionPerformed(e);
     Object obj = e.getSource();
-    if (obj == this.btn)
+    if (obj == this.btn) {
       upperLabel.setText("Connecting...");
+    }
   }
 }
