@@ -12,22 +12,22 @@ public final class Bar extends Rectangle {
     velocity = new Dimension(0, 0);
   }
 
-  public void setVelocity(Dimension newVelocity) {
+  public void setVelocity(final Dimension newVelocity) {
     velocity.width = newVelocity.width;
     velocity.height = newVelocity.height;
   }
 
-  public void setVelocity(int newX, int newY) {
+  public void setVelocity(final int newX, final int newY) {
     velocity.width = newX;
     velocity.height = newY;
   }
 
-  public void setVelocityX(int nwidth) {
-    velocity.width = nwidth;
+  public void setVelocityX(final int newX) {
+    velocity.width = newX;
   }
 
-  public void setVelocityY(int nheight) {
-    velocity.height = nheight;
+  public void setVelocityY(final int newY) {
+    velocity.height = newY;
   }
 
   public Dimension getVelocity() {
@@ -46,10 +46,12 @@ public final class Bar extends Rectangle {
     translate(velocity.width, velocity.height);
   }
 
-  // 次の時間でのバーの位置
+  /**
+   * 次の時間でのバーの位置.
+   * @return 次の時間でのバーの位置を表した Bar インスタンス.
+   */
   public Bar next() {
     return new Bar(x + velocity.width, y + velocity.height, width, height);
-
   }
 
   public void boundX() {
