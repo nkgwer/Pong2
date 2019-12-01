@@ -1,4 +1,4 @@
-package com.o-char.pong;
+package com.o_char.pong;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;

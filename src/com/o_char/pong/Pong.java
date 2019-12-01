@@ -1,4 +1,4 @@
-package com.o-char.pong;
+package com.o_char.pong;
 
 public class Pong {
 	public static void main(String[] args) {

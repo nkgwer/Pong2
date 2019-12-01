@@ -1,4 +1,4 @@
-package com.o-char.pong;
+package com.o_char.pong;
 
 public abstract class PongController {
 	String userName;
