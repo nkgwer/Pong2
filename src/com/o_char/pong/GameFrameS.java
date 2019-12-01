@@ -9,7 +9,9 @@ import java.util.StringTokenizer;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-// PongServer向けゲーム画面用クラス
+/**
+ * PongServer 向けゲーム画面用クラス.
+ */
 public final class GameFrameS extends GameFrame implements ActionListener {
   JButton btn;
 

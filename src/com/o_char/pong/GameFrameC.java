@@ -1,11 +1,12 @@
 package com.o_char.pong;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.util.StringTokenizer;
 import javax.swing.JPanel;
 
-// PongClient向けゲーム画面用クラス
+/**
+ * PongClient 向けゲーム画面用クラス.
+ */
 public final class GameFrameC extends GameFrame {
   /**
    * Constructor.
