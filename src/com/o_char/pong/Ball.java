@@ -1,6 +1,8 @@
 package com.o_char.pong;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -124,6 +126,10 @@ public class Ball extends Rectangle {
     velocity.height = -velocity.height;
   }
 
+  /**
+   * Ball を表す文字列を返す.
+   * @return Ball を表す文字列.
+   */
   public String toString() {
     Color color = this.color;
     return "Ball: " + this.x + " " + this.y + " " + this.width + " " + this.height + " " + this.velocity.width + " "
