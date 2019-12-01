@@ -6,9 +6,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class PongClient extends PongController implements Runnable {
-  StartFrameC sFrameC;
-  GameFrame gFrame;
-  String hostName, sPlayerName;
+  StartFrameC startFrameC;
+  GameFrame gameFrame;
+  String hostName;
+  String serverPlayerName;
   int id;
   private boolean isInitialized;
   private boolean isStartFrame;
@@ -19,18 +20,20 @@ public class PongClient extends PongController implements Runnable {
   private PongSender pongSender;
 
   public PongClient() {
-    this.sFrameC = new StartFrameC(this);
+    this.startFrameC = new StartFrameC(this);
     this.isInitialized = false;
   }
 
+  /**
+   * ゲームの処理を行う.
+   */
   public void run() {
-    String[] args = new String[0];
     this.initialize();
     this.waitBtnPushed();
 
-    this.userName = this.sFrameC.textField1.getText(); // ユーザーネーム
-    this.hostName = this.sFrameC.textField2.getText(); // 10.9.81.128 など
-
+    this.userName = this.startFrameC.textField1.getText(); // ユーザーネーム
+    this.hostName = this.startFrameC.textField2.getText(); // 10.9.81.128 など
+    String[] args = new String[0];
     this.accessServer(args); // サーバーに接続, 受信の設定
 
     this.pongSender.send("Joined: " + this.userName); // データ送信
@@ -66,20 +69,25 @@ public class PongClient extends PongController implements Runnable {
     System.exit(0);
   }
 
+  /**
+   * 初期化する.
+   */
   public void initialize() {
     if (this.isInitialized) {
       return;
     }
     this.isInitialized = true;
     System.out.println("Opening: Start Frame");
-    this.sFrameC.setVisible(true);
+    this.startFrameC.setVisible(true);
     this.isStartFrame = true;
   }
 
-  // スタート画面のボタンが押されるまで待つ
+  /**
+   * スタート画面のボタンが押されるまで待つ.
+   */
   public void waitBtnPushed() {
     try {
-      while (!this.sFrameC.isBtnPushed) {
+      while (!this.startFrameC.isBtnPushed) {
         Thread.sleep(10);
       }
     } catch (InterruptedException ire) {
@@ -87,7 +95,11 @@ public class PongClient extends PongController implements Runnable {
     }
   }
 
-  // 指定したホスト名のアドレス, ポート番号に接続する。
+  /**
+   * 指定したホスト名のアドレス, ポート番号に接続する.
+   *
+   * @param args 引数.
+   */
   public void accessServer(String[] args) {
     InetAddress addr;
     try {
@@ -163,33 +175,34 @@ public class PongClient extends PongController implements Runnable {
     System.out.println("Connection accepted: " + this.socket);
   }
 
-  // pongReceiverで受信した文字列に対する処理
+  /**
+   * pongReceiverで受信した文字列に対する処理.
+   */
   public synchronized void receive(String s, int ri) {
     if (this.isStartFrame) {
       if (s.startsWith("Number of Player: ")) {
         this.number = Integer.parseInt(s.replaceFirst("Number of Player: ", ""));
         System.out.println("Number of players: " + this.number + "人");
       } else if (s.startsWith("Server's Name: ")) {
-        String str = s.replaceFirst("Server's Name: ", "");
-        this.sPlayerName = str;
-        this.sFrameC.logAppendln("Connected to " + str + ".");
+        this.serverPlayerName = s.replaceFirst("Server's Name: ", "");
+        this.startFrameC.logAppendln("Connected to " + this.serverPlayerName + ".");
       } else if (s.startsWith("Your ID: ")) {
         String str = s.replaceFirst("Your ID: ", "");
         this.id = Integer.parseInt(str);
-        this.sFrameC.logAppendln("My ID: " + str + ".");
-        this.sFrameC.logAppendln("Waiting...");
+        this.startFrameC.logAppendln("My ID: " + str + ".");
+        this.startFrameC.logAppendln("Waiting...");
       } else if (s.equals("Close Start Frame")) {
         this.changeFrameStoG();
       }
     } else if (this.isGameFrame) {
       if (s.startsWith("Ball:")) {
-        this.gFrame.receiveBall(s);
+        this.gameFrame.receiveBall(s);
       } else if (s.startsWith("Point:")) {
-        this.gFrame.receivePoint(s);
+        this.gameFrame.receivePoint(s);
       } else if (s.equals("Win")) {
-        this.gFrame.win();
+        this.gameFrame.win();
       } else if (s.equals("Lose")) {
-        this.gFrame.lose();
+        this.gameFrame.lose();
       }
     }
   }
@@ -233,12 +246,12 @@ public class PongClient extends PongController implements Runnable {
   }
 
   private void changeFrameStoG() {
-    this.gFrame = new GameFrameC(this.number, this.id, this);
+    this.gameFrame = new GameFrameC(this.number, this.id, this);
     System.out.println("Closing: Start Frame");
     this.isGameFrame = true;
     this.isStartFrame = false;
-    this.sFrameC.setVisible(false);
+    this.startFrameC.setVisible(false);
     System.out.println("Opening: Game Frame");
-    this.gFrame.setVisible(true);
+    this.gameFrame.setVisible(true);
   }
 }
